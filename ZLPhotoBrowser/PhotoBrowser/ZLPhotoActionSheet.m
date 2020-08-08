@@ -975,17 +975,17 @@ double const ScalePhotoWidth = 1000;
     return nav;
 }
 
-//预览界面
+// 预览界面
 - (void)pushThumbnailViewController
 {
-    ZLAlbumListController *albumListVC = [[ZLAlbumListController alloc] initWithStyle:UITableViewStylePlain];
-    ZLImageNavigationController *nav = [self getImageNavWithRootVC:albumListVC];
+//    ZLAlbumListController *albumListVC = [[ZLAlbumListController alloc] initWithStyle:UITableViewStylePlain];
+//    ZLImageNavigationController *nav = [self getImageNavWithRootVC:albumListVC];
     ZLThumbnailViewController *tvc = [[ZLThumbnailViewController alloc] init];
-    [nav pushViewController:tvc animated:YES];
+    ZLImageNavigationController *nav = [self getImageNavWithRootVC:tvc];
     [self.sender showDetailViewController:nav sender:nil];
 }
 
-//查看大图界面
+// 查看大图界面
 - (void)pushBigImageViewControllerWithModels:(NSArray<ZLPhotoModel *> *)models index:(NSInteger)index
 {
     ZLShowBigImgViewController *svc = [[ZLShowBigImgViewController alloc] init];

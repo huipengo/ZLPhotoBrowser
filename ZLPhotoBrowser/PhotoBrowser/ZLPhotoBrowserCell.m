@@ -20,12 +20,10 @@
 @implementation ZLPhotoBrowserCell
 
 - (void)awakeFromNib {
-    // Initialization code
     [super awakeFromNib];
 }
 
-- (void)setModel:(ZLAlbumListModel *)model
-{
+- (void)setModel:(ZLAlbumListModel *)model {
     _model = model;
     
     if (self.cornerRadio > .0) {
@@ -46,12 +44,6 @@
     
     self.labTitle.text = model.title;
     self.labCount.text = [NSString stringWithFormat:@"(%ld)", model.count];
-}
-
-- (void)setSelected:(BOOL)selected animated:(BOOL)animated {
-    [super setSelected:selected animated:animated];
-
-    // Configure the view for the selected state
 }
 
 @end

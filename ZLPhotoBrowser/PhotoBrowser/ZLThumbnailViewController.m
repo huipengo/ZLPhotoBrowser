@@ -151,15 +151,14 @@ typedef NS_ENUM(NSUInteger, SlideSelectType) {
     
     self.automaticallyAdjustsScrollViewInsets = true;
     self.edgesForExtendedLayout = UIRectEdgeAll;
-    self.view.backgroundColor = [UIColor whiteColor];
-    self.title = self.albumListModel.title;
-    
-    [self initNavBtn];
-    [self setupCollectionView];
-    [self setupBottomView];
     
     ZLPhotoConfiguration *configuration = [(ZLImageNavigationController *)self.navigationController configuration];
+    self.view.backgroundColor = configuration.navBarColor;
     
+    [self initNavigationBar];
+    [self setupCollectionView];
+    [self setupBottomView];
+        
     if (configuration.allowSlideSelect) {
         //添加滑动选择手势
         UIPanGestureRecognizer *pan = [[UIPanGestureRecognizer alloc] initWithTarget:self action:@selector(panAction:)];
@@ -182,7 +181,6 @@ typedef NS_ENUM(NSUInteger, SlideSelectType) {
     [super viewDidAppear:animated];
     _isLayoutOK = YES;
     _isPreviewPush = NO;
-    
 }
 
 - (void)viewDidLayoutSubviews
@@ -202,38 +200,25 @@ typedef NS_ENUM(NSUInteger, SlideSelectType) {
     if (condition1 || condition2) {
         //点击后直接编辑则不需要下方工具条
         showBottomView = NO;
-        inset.bottom = 0;
+        inset.bottom = 0.0f;
     }
     
-    CGFloat bottomViewH = showBottomView ? 44 : 0;
-    CGFloat bottomBtnH = 30;
+    CGFloat bottomViewH = showBottomView ? WBBottomToolBarHeight : 0.0f;
     
-    CGFloat width = kViewWidth-inset.left-inset.right;
-    self.collectionView.frame = CGRectMake(inset.left, 0, width, kViewHeight-inset.bottom-bottomViewH);
+    CGFloat width = kViewWidth - inset.left - inset.right;
+    self.collectionView.frame = CGRectMake(inset.left, 0.0f, width, kViewHeight);
+    UIEdgeInsets contentInset = UIEdgeInsetsMake(0.0f, inset.left, bottomViewH, inset.right);
+    self.collectionView.contentInset = contentInset;
+    if (@available(iOS 11.1, *)) {
+        self.collectionView.verticalScrollIndicatorInsets = contentInset;
+    } else {
+        // Fallback on earlier versions
+    }
     
     if (!showBottomView) return;
     
-    self.bottomView.frame = CGRectMake(inset.left, kViewHeight-bottomViewH-inset.bottom, width, bottomViewH+inset.bottom);
-    self.bline.frame = CGRectMake(0, 0, width, 1/[UIScreen mainScreen].scale);
-    
-    CGFloat offsetX = 12;
-    if (configuration.allowEditImage || configuration.allowEditVideo) {
-        self.btnEdit.frame = CGRectMake(offsetX, 7, GetMatchValue(GetLocalLanguageTextValue(ZLPhotoBrowserEditText), 15, YES, bottomBtnH), bottomBtnH);
-        offsetX = CGRectGetMaxX(self.btnEdit.frame) + 10;
-    }
-    self.btnPreView.frame = CGRectMake(offsetX, 7, GetMatchValue(GetLocalLanguageTextValue(ZLPhotoBrowserPreviewText), 15, YES, bottomBtnH), bottomBtnH);
-    offsetX = CGRectGetMaxX(self.btnPreView.frame) + 10;
-    
-    if (configuration.allowSelectOriginal && configuration.allowSelectImage) {
-        self.btnOriginalPhoto.frame = CGRectMake(offsetX, 7, GetMatchValue(GetLocalLanguageTextValue(ZLPhotoBrowserOriginalText), 15, YES, bottomBtnH)+25, bottomBtnH);
-        offsetX = CGRectGetMaxX(self.btnOriginalPhoto.frame) + 5;
-        
-        self.labPhotosBytes.frame = CGRectMake(offsetX, 7, 80, bottomBtnH);
-    }
-    
-    CGFloat doneWidth = GetMatchValue(self.btnDone.currentTitle, 15, YES, bottomBtnH);
-    doneWidth = MAX(70, doneWidth);
-    self.btnDone.frame = CGRectMake(width-doneWidth-12, 7, doneWidth, bottomBtnH);
+    CGFloat toolBarH = (bottomViewH + inset.bottom);
+    self.bottomToolBar.frame = CGRectMake(inset.left, kViewHeight - toolBarH, width, toolBarH);
     
     if (!_isLayoutOK && self.albumListModel) {
         [self scrollToBottom];
@@ -277,47 +262,7 @@ typedef NS_ENUM(NSUInteger, SlideSelectType) {
 
 - (void)resetBottomBtnsStatus:(BOOL)getBytes
 {
-    ZLImageNavigationController *nav = (ZLImageNavigationController *)self.navigationController;
-    ZLPhotoConfiguration *configuration = nav.configuration;
-    
-    if (nav.arrSelectedModels.count > 0) {
-        self.btnOriginalPhoto.enabled = YES;
-        self.btnPreView.enabled = YES;
-        self.btnDone.enabled = YES;
-        if (nav.isSelectOriginalPhoto) {
-            if (getBytes) [self getOriginalImageBytes];
-        } else {
-            self.labPhotosBytes.text = nil;
-        }
-        self.btnOriginalPhoto.selected = nav.isSelectOriginalPhoto;
-        [self.btnDone setTitle:[NSString stringWithFormat:@"%@(%ld)", GetLocalLanguageTextValue(ZLPhotoBrowserDoneText), nav.arrSelectedModels.count] forState:UIControlStateNormal];
-        [self.btnDone setTitleColor:configuration.bottomBtnsNormalTitleColor forState:UIControlStateNormal];
-        [self.btnOriginalPhoto setTitleColor:configuration.bottomBtnsNormalTitleColor forState:UIControlStateNormal];
-        [self.btnPreView setTitleColor:configuration.bottomBtnsNormalTitleColor forState:UIControlStateNormal];
-        self.btnDone.backgroundColor = configuration.bottomBtnsNormalBgColor;
-    } else {
-        self.btnOriginalPhoto.selected = NO;
-        self.btnOriginalPhoto.enabled = NO;
-        self.btnPreView.enabled = NO;
-        self.btnDone.enabled = NO;
-        self.labPhotosBytes.text = nil;
-        [self.btnDone setTitle:GetLocalLanguageTextValue(ZLPhotoBrowserDoneText) forState:UIControlStateDisabled];
-        [self.btnDone setTitleColor:configuration.bottomBtnsDisableTitleColor forState:UIControlStateDisabled];
-        [self.btnOriginalPhoto setTitleColor:configuration.bottomBtnsDisableTitleColor forState:UIControlStateDisabled];
-        [self.btnPreView setTitleColor:configuration.bottomBtnsDisableTitleColor forState:UIControlStateDisabled];
-        self.btnDone.backgroundColor = configuration.bottomBtnsDisableBgColor;
-    }
-    
-    BOOL canEdit = NO;
-    if (nav.arrSelectedModels.count == 1) {
-        ZLPhotoModel *m = nav.arrSelectedModels.firstObject;
-        canEdit = (configuration.allowEditImage && ((m.type == ZLAssetMediaTypeImage) ||
-        (m.type == ZLAssetMediaTypeGif && !configuration.allowSelectGif) ||
-        (m.type == ZLAssetMediaTypeLivePhoto && !configuration.allowSelectLivePhoto))) ||
-        (configuration.allowEditVideo && m.type == ZLAssetMediaTypeVideo && round(m.asset.duration) >= configuration.maxEditVideoTime);
-    }
-    [self.btnEdit setTitleColor:canEdit?configuration.bottomBtnsNormalTitleColor:configuration.bottomBtnsDisableTitleColor forState:UIControlStateNormal];
-    self.btnEdit.userInteractionEnabled = canEdit;
+    [self.bottomToolBar resetThumbnailBottomBtnsStatus:getBytes];
 }
 
 #pragma mark - ui
@@ -335,13 +280,13 @@ typedef NS_ENUM(NSUInteger, SlideSelectType) {
         columnCount = 4;
     }
     
-    layout.itemSize = CGSizeMake((width-1.5*columnCount)/columnCount, (width-1.5*columnCount)/columnCount);
+    layout.itemSize = CGSizeMake((width - 1.5 * columnCount)/columnCount, (width - 1.5 * columnCount)/columnCount);
     layout.minimumInteritemSpacing = 1.5;
     layout.minimumLineSpacing = 1.5;
     layout.sectionInset = UIEdgeInsetsMake(3, 0, 3, 0);
     
     self.collectionView = [[UICollectionView alloc] initWithFrame:CGRectZero collectionViewLayout:layout];
-    self.collectionView.backgroundColor = [UIColor whiteColor];
+    self.collectionView.backgroundColor = self.view.backgroundColor;
     self.collectionView.dataSource = self;
     self.collectionView.alwaysBounceVertical = YES;
     self.collectionView.delegate = self;
@@ -370,69 +315,55 @@ typedef NS_ENUM(NSUInteger, SlideSelectType) {
         return;
     }
     
-    self.bottomView = [[UIView alloc] init];
-    self.bottomView.backgroundColor = configuration.bottomViewBgColor;
-    [self.view addSubview:self.bottomView];
+    _bottomToolBar = [WBBottomToolBar bottomToolBarWithFrame:CGRectZero owner:self];
+    [self.view addSubview:_bottomToolBar];
     
-    self.bline = [[UIView alloc] init];
-    self.bline.backgroundColor = kRGB(232, 232, 232);
-    [self.bottomView addSubview:self.bline];
-    
+    @zl_weakify(self);
     if (configuration.allowEditImage || configuration.allowEditVideo) {
-        self.btnEdit = [UIButton buttonWithType:UIButtonTypeCustom];
-        self.btnEdit.titleLabel.font = [UIFont systemFontOfSize:15];
-        [self.btnEdit setTitle:GetLocalLanguageTextValue(ZLPhotoBrowserEditText) forState:UIControlStateNormal];
-        [self.btnEdit addTarget:self action:@selector(btnEdit_Click:) forControlEvents:UIControlEventTouchUpInside];
-        [self.bottomView addSubview:self.btnEdit];
+        _bottomToolBar.editActionCompletion = ^(id _Nonnull sender) {
+            @zl_strongify(self);
+            [self _editAction:sender];
+        };
     }
     
-    self.btnPreView = [UIButton buttonWithType:UIButtonTypeCustom];
-    self.btnPreView.titleLabel.font = [UIFont systemFontOfSize:15];
-    [self.btnPreView setTitle:GetLocalLanguageTextValue(ZLPhotoBrowserPreviewText) forState:UIControlStateNormal];
-    [self.btnPreView addTarget:self action:@selector(btnPreview_Click:) forControlEvents:UIControlEventTouchUpInside];
-    [self.bottomView addSubview:self.btnPreView];
+    _bottomToolBar.previewActionCompletion = ^(id _Nonnull sender) {
+        @zl_strongify(self);
+        [self _previewAction:sender];
+    };
     
     if (configuration.allowSelectOriginal) {
-        self.btnOriginalPhoto = [UIButton buttonWithType:UIButtonTypeCustom];
-        self.btnOriginalPhoto.titleLabel.font = [UIFont systemFontOfSize:15];
-        [self.btnOriginalPhoto setImage:GetImageWithName(@"zl_btn_original_circle") forState:UIControlStateNormal];
-        [self.btnOriginalPhoto setImage:GetImageWithName(@"zl_btn_original_selected") forState:UIControlStateSelected];
-        [self.btnOriginalPhoto setTitle:GetLocalLanguageTextValue(ZLPhotoBrowserOriginalText) forState:UIControlStateNormal];
-        [self.btnOriginalPhoto addTarget:self action:@selector(btnOriginalPhoto_Click:) forControlEvents:UIControlEventTouchUpInside];
-        [self.bottomView addSubview:self.btnOriginalPhoto];
-        
-        self.labPhotosBytes = [[UILabel alloc] init];
-        self.labPhotosBytes.font = [UIFont systemFontOfSize:15];
-        self.labPhotosBytes.textColor = configuration.bottomBtnsNormalTitleColor;
-        [self.bottomView addSubview:self.labPhotosBytes];
+        _bottomToolBar.originalPhotoActionCompletion = ^(id _Nonnull sender) {
+            @zl_strongify(self);
+            [self _originalPhotoAction:sender];
+        };
     }
     
-    self.btnDone = [UIButton buttonWithType:UIButtonTypeCustom];
-    self.btnDone.titleLabel.font = [UIFont systemFontOfSize:15];
-    [self.btnDone setTitle:GetLocalLanguageTextValue(ZLPhotoBrowserDoneText) forState:UIControlStateNormal];
-    self.btnDone.layer.masksToBounds = YES;
-    self.btnDone.layer.cornerRadius = 3.0f;
-    [self.btnDone addTarget:self action:@selector(btnDone_Click:) forControlEvents:UIControlEventTouchUpInside];
-    [self.bottomView addSubview:self.btnDone];
+    _bottomToolBar.doneActionCompletion = ^(id _Nonnull sender) {
+        @zl_strongify(self);
+        [self _doneAction:sender];
+    };
 }
 
-- (void)initNavBtn
+- (void)initNavigationBar
 {
+    self.title = self.albumListModel.title;
+    self.navigationController.navigationBar.shadowImage = [[UIImage alloc] init];
+
     ZLImageNavigationController *nav = (ZLImageNavigationController *)self.navigationController;
     ZLPhotoConfiguration *configuration = nav.configuration;
     
 //    nav.viewControllers.firstObject.navigationItem.backBarButtonItem.title = GetLocalLanguageTextValue(ZLPhotoBrowserBackText);
-    UIBarButtonItem *backItem = [[UIBarButtonItem alloc] initWithImage:GetImageWithName(@"zl_navBack") style:UIBarButtonItemStylePlain target:self action:@selector(navBackAction)];
-    self.navigationItem.leftBarButtonItem = backItem;
+//    UIBarButtonItem *backItem = [[UIBarButtonItem alloc] initWithImage:GetImageWithName(@"zl_navBack") style:UIBarButtonItemStylePlain target:self action:@selector(navBackAction)];
+//    self.navigationItem.leftBarButtonItem = backItem;
 
     UIButton *btn = [UIButton buttonWithType:UIButtonTypeCustom];
-    CGFloat width = GetMatchValue(GetLocalLanguageTextValue(ZLPhotoBrowserCancelText), 16, YES, 44);
-    btn.frame = CGRectMake(0, 0, width, 44);
-    btn.titleLabel.font = [UIFont systemFontOfSize:16];
+    CGFloat width = GetMatchValue(GetLocalLanguageTextValue(ZLPhotoBrowserCancelText), 17.0f, YES, 44.0f);
+    btn.frame = CGRectMake(0, 0, width, 44.0f);
+    btn.titleLabel.font = [UIFont systemFontOfSize:17.0f];
     [btn setTitle:GetLocalLanguageTextValue(ZLPhotoBrowserCancelText) forState:UIControlStateNormal];
     [btn setTitleColor:configuration.navTitleColor forState:UIControlStateNormal];
     [btn addTarget:self action:@selector(navRightBtn_Click) forControlEvents:UIControlEventTouchUpInside];
-    self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithCustomView:btn];
+    self.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc] initWithCustomView:btn];
 }
 
 #pragma mark - UIButton Action
@@ -442,7 +373,7 @@ typedef NS_ENUM(NSUInteger, SlideSelectType) {
     [self.navigationController popViewControllerAnimated:YES];
 }
 
-- (void)btnEdit_Click:(id)sender {
+- (void)_editAction:(id)sender {
     ZLImageNavigationController *nav = (ZLImageNavigationController *)self.navigationController;
     ZLPhotoModel *m = nav.arrSelectedModels.firstObject;
     
@@ -459,7 +390,7 @@ typedef NS_ENUM(NSUInteger, SlideSelectType) {
     }
 }
 
-- (void)btnPreview_Click:(id)sender
+- (void)_previewAction:(id)sender
 {
     _isPreviewPush = YES;
     ZLImageNavigationController *nav = (ZLImageNavigationController *)self.navigationController;
@@ -482,19 +413,12 @@ typedef NS_ENUM(NSUInteger, SlideSelectType) {
     return vc;
 }
 
-- (void)btnOriginalPhoto_Click:(id)sender
+- (void)_originalPhotoAction:(id)sender
 {
-    ZLImageNavigationController *nav = (ZLImageNavigationController *)self.navigationController;
-    self.btnOriginalPhoto.selected = !self.btnOriginalPhoto.selected;
-    nav.isSelectOriginalPhoto = self.btnOriginalPhoto.selected;
-    self.labPhotosBytes.hidden = !nav.isSelectOriginalPhoto;
-    self.labPhotosBytes.text = nil;
-    if (nav.isSelectOriginalPhoto) {
-        [self getOriginalImageBytes];
-    }
+    
 }
 
-- (void)btnDone_Click:(id)sender
+- (void)_doneAction:(id)sender
 {
     ZLImageNavigationController *nav = (ZLImageNavigationController *)self.navigationController;
     if (nav.callSelectImageBlock) {
@@ -927,10 +851,10 @@ typedef NS_ENUM(NSUInteger, SlideSelectType) {
     
     if (editImage && flag) {
         [nav.arrSelectedModels addObject:model];
-        [self btnEdit_Click:nil];
+        [self _editAction:nil];
     } else if (editVideo && flag) {
         [nav.arrSelectedModels addObject:model];
-        [self btnEdit_Click:nil];
+        [self _editAction:nil];
     }
     
     return configuration.editAfterSelectThumbnailImage && configuration.maxSelectCount == 1 && (configuration.allowEditImage || configuration.allowEditVideo);
@@ -1103,7 +1027,7 @@ typedef NS_ENUM(NSUInteger, SlideSelectType) {
         if (![self shouldDirectEdit:model]) {
             model.selected = sel;
             [nav.arrSelectedModels addObject:model];
-            [self btnDone_Click:nil];
+            [self _doneAction:nil];
             return;
         }
     }
@@ -1117,16 +1041,6 @@ typedef NS_ENUM(NSUInteger, SlideSelectType) {
 - (void)imagePickerControllerDidCancel:(UIImagePickerController *)picker
 {
     [picker dismissViewControllerAnimated:YES completion:nil];
-}
-
-- (void)getOriginalImageBytes
-{
-    ZLImageNavigationController *nav = (ZLImageNavigationController *)self.navigationController;
-    @zl_weakify(self);
-    [ZLPhotoManager getPhotosBytesWithArray:nav.arrSelectedModels completion:^(NSString *photosBytes) {
-        @zl_strongify(self);
-        self.labPhotosBytes.text = [NSString stringWithFormat:@"(%@)", photosBytes];
-    }];
 }
 
 #pragma mark - UIViewControllerPreviewingDelegate

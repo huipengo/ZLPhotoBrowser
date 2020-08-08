@@ -14,6 +14,8 @@
 #import "UIControl+EnlargeTouchArea.h"
 #import "ZLProgressView.h"
 
+static CGFloat const wb_selected_btn_width = 24.0f;
+
 @interface ZLCollectionCell ()
 
 @property (nonatomic, copy) NSString *identifier;
@@ -55,14 +57,14 @@
     [self.contentView addSubview:_videoBottomView];
     
     self.btnSelect = [UIButton buttonWithType:UIButtonTypeCustom];
-    self.btnSelect.frame = CGRectMake(GetViewWidth(self.contentView)-26, 5, 23, 23);
+    self.btnSelect.frame = CGRectMake(GetViewWidth(self.contentView) - wb_selected_btn_width - 7.5f, 7.5f, wb_selected_btn_width, wb_selected_btn_width);
     [self.btnSelect setBackgroundImage:GetImageWithName(@"zl_btn_unselected") forState:UIControlStateNormal];
     [self.btnSelect setBackgroundImage:GetImageWithName(@"zl_btn_selected") forState:UIControlStateSelected];
     [self.btnSelect addTarget:self action:@selector(btnSelectClick:) forControlEvents:UIControlEventTouchUpInside];
     [self.contentView addSubview:self.btnSelect];
     
     self.indexLabel = [[UILabel alloc] init];
-    self.indexLabel.layer.cornerRadius = 23.0 / 2;
+    self.indexLabel.layer.cornerRadius = wb_selected_btn_width / 2;
     self.indexLabel.layer.masksToBounds = YES;
     self.indexLabel.textColor = [UIColor whiteColor];
     self.indexLabel.font = [UIFont systemFontOfSize:14];
@@ -95,7 +97,7 @@
 {
     [super layoutSubviews];
     self.imageView.frame = self.bounds;
-    self.btnSelect.frame = CGRectMake(GetViewWidth(self.contentView)-26, 5, 23, 23);
+    self.btnSelect.frame = CGRectMake(GetViewWidth(self.contentView) - wb_selected_btn_width - 7.5f, 7.5f, wb_selected_btn_width, wb_selected_btn_width);
     self.indexLabel.frame = self.btnSelect.frame;
     self.maskView.frame = self.bounds;
     

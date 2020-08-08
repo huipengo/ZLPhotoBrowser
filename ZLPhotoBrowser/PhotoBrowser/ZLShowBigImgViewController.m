@@ -21,6 +21,7 @@
 #import "ZLPullDownInteractiveTransition.h"
 #import <SDWebImage/SDImageCodersManager.h>
 #import <SDWebImage/SDImageGIFCoder.h>
+#import "WBBottomToolBar.h"
 
 @interface ZLShowBigImgViewController () <UIScrollViewDelegate, UICollectionViewDataSource, UICollectionViewDelegate, UINavigationControllerDelegate, UIViewControllerTransitioningDelegate>
 {
@@ -31,14 +32,9 @@
     UILabel *_indexLabel;
     UILabel *_titleLabel;
     
-    //底部view
-    UIView   *_bottomView;
-    UIButton *_btnOriginalPhoto;
-    UIButton *_btnDone;
-    //编辑按钮
-    UIButton *_btnEdit;
+    // 底部view
+    WBBottomToolBar *_bottomToolBar;
 
-    
     NSArray *_arrSelPhotosBackup;
     NSMutableArray *_arrSelAssets;
     NSArray *_arrSelAssetsBackup;
@@ -47,7 +43,7 @@
     
     BOOL _hideNavBar;
     
-    //设备旋转前的index
+    // 设备旋转前的index
     NSInteger _indexBeforeRotation;
     UICollectionViewFlowLayout *_layout;
     
@@ -59,7 +55,6 @@
 
 @property (nonatomic, assign) BOOL interactive;
 @property (nonatomic, strong) ZLInteractiveTrasition *popTrasition;
-@property (nonatomic, strong) UILabel *labPhotosBytes;
 @property (nonatomic, strong) ZLPullDownInteractiveTransition *dismissTrasition;
 
 @end
@@ -78,7 +73,7 @@
     self.automaticallyAdjustsScrollViewInsets = NO;
 
     _isFirstAppear = YES;
-    _currentPage = self.selectIndex+1;
+    _currentPage   = self.selectIndex + 1;
     _indexBeforeRotation = self.selectIndex;
     
     [self initCollectionView];
@@ -143,41 +138,37 @@
     _layout.itemSize = CGSizeMake(kViewWidth, kViewHeight);
     [_collectionView setCollectionViewLayout:_layout];
     
-    _collectionView.frame = CGRectMake(-kItemMargin/2, 0, kViewWidth+kItemMargin, kViewHeight);
+    _collectionView.frame = CGRectMake(-kItemMargin/2, 0, kViewWidth + kItemMargin, kViewHeight);
     
-    [_collectionView setContentOffset:CGPointMake((kViewWidth+kItemMargin)*_indexBeforeRotation, 0)];
+    [_collectionView setContentOffset:CGPointMake((kViewWidth+kItemMargin) * _indexBeforeRotation, 0)];
     
     //nav view
-    CGFloat navHeight = inset.top+44;
+    CGFloat navHeight = inset.top + 44.0f;
     CGRect navFrame = CGRectMake(0, 0, kViewWidth, navHeight);
-    _navView.frame = navFrame;
+    _navView.frame  = navFrame;
     
-    _btnBack.frame = CGRectMake(inset.left, inset.top, 60, 44);
-    _titleLabel.frame = CGRectMake(kViewWidth/2-50, inset.top, 100, 44);
-    _navRightBtn.frame = CGRectMake(kViewWidth-40-inset.right, inset.top+(44-25)/2, 25, 25);
-    _indexLabel.frame = _navRightBtn.frame;
+    _btnBack.frame     = CGRectMake(inset.left, inset.top, 60, 44.0f);
+    _titleLabel.frame  = CGRectMake(kViewWidth / 2 - 50, inset.top, 100, 44.0f);
+    _navRightBtn.frame = CGRectMake(kViewWidth - 40 - inset.right, inset.top + (44 - 25) / 2, 25, 25);
+    _indexLabel.frame  = _navRightBtn.frame;
+    
     //底部view
-    CGRect frame = CGRectMake(0, kViewHeight-44-inset.bottom, kViewWidth, 44+inset.bottom);
-    _bottomView.frame = frame;
-    
-    CGFloat btnOriWidth = GetMatchValue(GetLocalLanguageTextValue(ZLPhotoBrowserOriginalText), 15, YES, 30);
-    _btnOriginalPhoto.frame = CGRectMake(12+inset.left, 7, btnOriWidth+25, 30);
-    self.labPhotosBytes.frame = CGRectMake(CGRectGetMaxX(_btnOriginalPhoto.frame)+5, 7, 80, 30);
-    _btnEdit.frame = CGRectMake(frame.size.width/2-30, 7, 60, 30);
-    _btnDone.frame = CGRectMake(frame.size.width-82-inset.right, 7, 70, 30);
+    CGFloat bottomViewH = WBBottomToolBarHeight;
+    CGFloat toolBarH = (bottomViewH + inset.bottom);
+    CGRect frame = CGRectMake(0, kViewHeight - toolBarH, kViewWidth, toolBarH);
+    _bottomToolBar.frame = frame;
 }
 
 #pragma mark - 设备旋转
 - (void)deviceOrientationChanged:(NSNotification *)notify
 {
-//    NSLog(@"%s %@", __FUNCTION__, NSStringFromCGRect(self.view.bounds));
     _indexBeforeRotation = _currentPage - 1;
 }
 
 - (void)setModels:(NSArray<ZLPhotoModel *> *)models
 {
     _models = models;
-    //如果预览数组中存在网络图片/视频则返回
+    // 如果预览数组中存在网络图片/视频则返回
     for (ZLPhotoModel *m in models) {
         if (m.type == ZLAssetMediaTypeNetImage ||
             m.type == ZLAssetMediaTypeNetVideo) {
@@ -291,72 +282,42 @@
 - (void)initBottomView
 {
     if (self.hideToolBar) return;
-    
-    ZLImageNavigationController *nav = (ZLImageNavigationController *)self.navigationController;
-    ZLPhotoConfiguration *configuration = nav.configuration;
-    
-    _bottomView = [[UIView alloc] initWithFrame:CGRectMake(0, kViewHeight - 44, kViewWidth, 44)];
-    _bottomView.backgroundColor = configuration.bottomViewBgColor;
-    
-    if (configuration.allowSelectOriginal) {
-        _btnOriginalPhoto = [UIButton buttonWithType:UIButtonTypeCustom];
-        [_btnOriginalPhoto setTitle:GetLocalLanguageTextValue(ZLPhotoBrowserOriginalText) forState:UIControlStateNormal];
-        _btnOriginalPhoto.titleLabel.font = [UIFont systemFontOfSize:15];
-        [_btnOriginalPhoto setTitleColor:configuration.bottomBtnsNormalTitleColor forState: UIControlStateNormal];
-        UIImage *normalImg = GetImageWithName(@"zl_btn_original_circle");
-        UIImage *selImg = GetImageWithName(@"zl_btn_original_selected");
-        [_btnOriginalPhoto setImage:normalImg forState:UIControlStateNormal];
-        [_btnOriginalPhoto setImage:selImg forState:UIControlStateSelected];
-        [_btnOriginalPhoto setImageEdgeInsets:UIEdgeInsetsMake(0, -5, 0, 5)];
-        [_btnOriginalPhoto addTarget:self action:@selector(btnOriginalImage_Click:) forControlEvents:UIControlEventTouchUpInside];
-        _btnOriginalPhoto.selected = nav.isSelectOriginalPhoto;
-        [self getPhotosBytes];
-        [_bottomView addSubview:_btnOriginalPhoto];
         
-        self.labPhotosBytes = [[UILabel alloc] init];
-        self.labPhotosBytes.font = [UIFont systemFontOfSize:15];
-        self.labPhotosBytes.textColor = configuration.bottomBtnsNormalTitleColor;
-        [_bottomView addSubview:self.labPhotosBytes];
+    _bottomToolBar = [WBBottomToolBar bottomToolBarWithFrame:CGRectZero
+                                                       owner:self
+                                                      source:WBPhotoBrowserBigImage
+                                                     preView:self.isPreView];
+    [self.view addSubview:_bottomToolBar];
+    
+    @zl_weakify(self);
+    if (_bottomToolBar.allowSelectOriginal) {
+        _bottomToolBar.originalPhotoActionCompletion = ^(id _Nonnull sender) {
+            @zl_strongify(self);
+            [self _originalImageAction:sender];
+        };
     }
     
-    //编辑
-    _btnEdit = [UIButton buttonWithType:UIButtonTypeCustom];
-    [_btnEdit setTitle:GetLocalLanguageTextValue(ZLPhotoBrowserEditText) forState:UIControlStateNormal];
-    _btnEdit.titleLabel.font = [UIFont systemFontOfSize:15];
-    [_btnEdit setTitleColor:configuration.bottomBtnsNormalTitleColor forState:UIControlStateNormal];
-    _btnEdit.frame = CGRectMake(kViewWidth/2-30, 7, 60, 30);
-    [_btnEdit addTarget:self action:@selector(btnEdit_Click:) forControlEvents:UIControlEventTouchUpInside];
-    [_bottomView addSubview:_btnEdit];
-    
-    _btnDone = [UIButton buttonWithType:UIButtonTypeCustom];
-    [_btnDone setTitle:GetLocalLanguageTextValue(ZLPhotoBrowserDoneText) forState:UIControlStateNormal];
-    _btnDone.titleLabel.font = [UIFont systemFontOfSize:15];
-    _btnDone.layer.masksToBounds = YES;
-    _btnDone.layer.cornerRadius = 3.0f;
-    [_btnDone setTitleColor:configuration.bottomBtnsNormalTitleColor forState:UIControlStateNormal];
-    [_btnDone setBackgroundColor:configuration.bottomBtnsNormalBgColor];
-    _btnDone.frame = CGRectMake(kViewWidth - 82, 7, 70, 30);
-    [_btnDone addTarget:self action:@selector(btnDone_Click:) forControlEvents:UIControlEventTouchUpInside];
-    [_bottomView addSubview:_btnDone];
-    
-    [self.view addSubview:_bottomView];
-    
-    if (self.isPreView) {
-        //预览本地/网络 图片/视频时，隐藏原图按钮
-        [_btnOriginalPhoto removeFromSuperview];
+    if (_bottomToolBar.allowEdit) {
+        _bottomToolBar.editActionCompletion = ^(id _Nonnull sender) {
+            @zl_strongify(self);
+            [self _editAction:sender];
+        };
     }
-    if (!configuration.allowEditImage && !configuration.allowEditVideo) {
-        _btnEdit.hidden = YES;
-    }
+    
+    _bottomToolBar.doneActionCompletion = ^(id _Nonnull sender) {
+        @zl_strongify(self);
+        [self _doneAction:sender];
+    };
+    
+    [self getPhotosBytes];
 }
 
 #pragma mark - UIButton Actions
-- (void)btnOriginalImage_Click:(UIButton *)btn
+- (void)_originalImageAction:(UIButton *)btn
 {
     ZLImageNavigationController *nav = (ZLImageNavigationController *)self.navigationController;
     ZLPhotoConfiguration *configuration = nav.configuration;
     
-    nav.isSelectOriginalPhoto = btn.selected = !btn.selected;
     if (btn.selected) {
         [self getPhotosBytes];
         if (!_navRightBtn.isSelected) {
@@ -365,12 +326,10 @@
                 [self navRightBtn_Click:_navRightBtn];
             }
         }
-    } else {
-        self.labPhotosBytes.text = nil;
     }
 }
 
-- (void)btnEdit_Click:(UIButton *)btn
+- (void)_editAction:(UIButton *)btn
 {
     ZLImageNavigationController *nav = (ZLImageNavigationController *)self.navigationController;
     ZLPhotoConfiguration *configuration = nav.configuration;
@@ -401,7 +360,7 @@
     }
 }
 
-- (void)btnDone_Click:(UIButton *)btn
+- (void)_doneAction:(UIButton *)btn
 {
     ZLImageNavigationController *nav = (ZLImageNavigationController *)self.navigationController;
     ZLPhotoConfiguration *configuration = nav.configuration;
@@ -421,9 +380,11 @@
     }
     if (self.arrSelPhotos && self.previewSelectedImageBlock) {
         self.previewSelectedImageBlock(self.arrSelPhotos, _arrSelAssets);
-    } else if (self.arrSelPhotos && self.previewNetImageBlock) {
+    }
+    else if (self.arrSelPhotos && self.previewNetImageBlock) {
         self.previewNetImageBlock(self.arrSelPhotos);
-    } else if (nav.callSelectImageBlock) {
+    }
+    else if (nav.callSelectImageBlock) {
         nav.callSelectImageBlock();
     }
 }
@@ -625,44 +586,14 @@
 
 - (void)resetDontBtnState
 {
-    ZLImageNavigationController *nav = (ZLImageNavigationController *)self.navigationController;
-    ZLPhotoConfiguration *configuration = nav.configuration;
-    
-    _btnDone.hidden = NO;
-    if (nav.arrSelectedModels.count > 0) {
-        if (configuration.mutuallyExclusiveSelectInMix && configuration.maxSelectCount > 1) {
-            ZLPhotoModel *model = self.models[_currentPage-1];
-            _btnDone.hidden = model.type == ZLAssetMediaTypeVideo;
-        }
-        [_btnDone setTitle:[NSString stringWithFormat:@"%@(%ld)", GetLocalLanguageTextValue(ZLPhotoBrowserDoneText), nav.arrSelectedModels.count] forState:UIControlStateNormal];
-    } else {
-        [_btnDone setTitle:GetLocalLanguageTextValue(ZLPhotoBrowserDoneText) forState:UIControlStateNormal];
-    }
+    ZLPhotoModel *model = self.models[_currentPage - 1];
+    [_bottomToolBar resetBigImageDontBtnState:model];
 }
 
 - (void)resetEditBtnState
 {
-    ZLImageNavigationController *nav = (ZLImageNavigationController *)self.navigationController;
-    ZLPhotoConfiguration *configuration = nav.configuration;
-    
-    if (!configuration.allowEditImage && !configuration.allowEditVideo) return;
-
     ZLPhotoModel *m = self.models[_currentPage-1];
-    BOOL flag = [m.asset.localIdentifier isEqualToString:nav.arrSelectedModels.firstObject.asset.localIdentifier];
-    
-    if ((nav.arrSelectedModels.count == 0 ||
-         (nav.arrSelectedModels.count <= 1 && flag)) &&
-        
-        ((configuration.allowEditImage &&
-         (m.type == ZLAssetMediaTypeImage ||
-         (m.type == ZLAssetMediaTypeGif && !configuration.allowSelectGif) ||
-         (m.type == ZLAssetMediaTypeLivePhoto && !configuration.allowSelectLivePhoto))) ||
-        
-        (configuration.allowEditVideo && m.type == ZLAssetMediaTypeVideo && round(m.asset.duration) >= configuration.maxEditVideoTime))) {
-        _btnEdit.hidden = NO;
-    } else {
-        _btnEdit.hidden = YES;
-    }
+    [_bottomToolBar resetBigImageEditBtnState:m];
 }
 
 - (void)resetIndexLabelState:(BOOL)animate
@@ -699,18 +630,8 @@
 
 - (void)resetOriginalBtnState
 {
-    ZLPhotoConfiguration *configuration = [(ZLImageNavigationController *)self.navigationController configuration];
-    
     ZLPhotoModel *m = self.models[_currentPage-1];
-    if ((m.type == ZLAssetMediaTypeImage) ||
-         (m.type == ZLAssetMediaTypeGif && !configuration.allowSelectGif) ||
-         (m.type == ZLAssetMediaTypeLivePhoto && !configuration.allowSelectLivePhoto)) {
-            _btnOriginalPhoto.hidden = NO;
-            self.labPhotosBytes.hidden = NO;
-    } else {
-        _btnOriginalPhoto.hidden = YES;
-        self.labPhotosBytes.hidden = YES;
-    }
+    [_bottomToolBar resetBigImageOriginalBtnState:m];
 }
 
 - (void)getPhotosBytes
@@ -720,17 +641,8 @@
     
     ZLPhotoConfiguration *configuration = nav.configuration;
     
-    NSArray *arr = configuration.showSelectBtn?nav.arrSelectedModels:@[self.models[_currentPage-1]];
-    
-    if (arr.count) {
-        @zl_weakify(self);
-        [ZLPhotoManager getPhotosBytesWithArray:arr completion:^(NSString *photosBytes) {
-            @zl_strongify(self);
-            self.labPhotosBytes.text = [NSString stringWithFormat:@"(%@)", photosBytes];
-        }];
-    } else {
-        self.labPhotosBytes.text = nil;
-    }
+    NSArray *photos = configuration.showSelectBtn?nav.arrSelectedModels:@[self.models[_currentPage-1]];
+    [_bottomToolBar getOriginalImageBytes:photos];
 }
 
 - (void)handlerSingleTap
@@ -738,7 +650,7 @@
     _hideNavBar = !_hideNavBar;
     
     _navView.hidden = _hideNavBar;
-    _bottomView.hidden = _hideNavBar;
+    _bottomToolBar.hidden = _hideNavBar;
 }
 
 #pragma mark - UICollectionDataSource

@@ -16,10 +16,9 @@
 #import "ToastUtils.h"
 #import <objc/runtime.h>
 
-#define kItemWidth kItemHeight * 2/3
-#define kItemHeight 50
+static CGFloat const kItemHeight = 50.0f;
+static CGFloat const kItemWidth  = kItemHeight * 2/3;
 
-///////-----cell
 @interface ZLEditVideoCell : UICollectionViewCell
 
 @property (nonatomic, strong) UIImageView *imageView;

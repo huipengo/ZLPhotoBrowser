@@ -265,7 +265,7 @@
 			isa = PBXProject;
 			attributes = {
 				LastSwiftUpdateCheck = 1100;
-				LastUpgradeCheck = 1020;
+				LastUpgradeCheck = 1160;
 				ORGANIZATIONNAME = long;
 				TargetAttributes = {
 					E4126B0B22FC077B00D3E9DF = {
@@ -516,6 +516,7 @@
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
 				SDKROOT = iphoneos;
+				SWIFT_COMPILATION_MODE = wholemodule;
 				VALIDATE_PRODUCT = YES;
 			};
 			name = Release;

@@ -172,7 +172,7 @@
 @property (nonatomic, assign) BOOL showSelectBtn;
 
 /**
- 导航条颜色，默认 rgb(44, 45, 46)
+ 导航条颜色，默认 rgb(54, 52, 51)
  */
 @property (nonatomic, strong) UIColor *navBarColor;
 
@@ -187,7 +187,7 @@
 @property (nonatomic, strong) UIColor *previewTextColor;
 
 /**
- 底部工具条底色，默认 rgb(44, 45, 46)
+ 底部工具条底色，默认 rgb(54, 52, 51)
  */
 @property (nonatomic, strong) UIColor *bottomViewBgColor;
 
@@ -197,17 +197,17 @@
 @property (nonatomic, strong) UIColor *bottomBtnsNormalTitleColor;
 
 /**
- 底部工具栏按钮 不可交互 状态标题颜色， rgb(168, 168, 168)
+ 底部工具栏按钮 不可交互 状态标题颜色， rgb(255, 255, 255, 0.2)
  */
 @property (nonatomic, strong) UIColor *bottomBtnsDisableTitleColor;
 
 /**
- 底部工具栏按钮 可交互 状态背景颜色，默认rgb(80, 169, 56)
+ 底部工具栏按钮 可交互 状态背景颜色，默认rgb(52, 120, 246)
  */
 @property (nonatomic, strong) UIColor *bottomBtnsNormalBgColor;
 
 /**
- 底部工具栏按钮 不可交互 状态背景颜色，默认rgb(39, 80, 32)
+ 底部工具栏按钮 不可交互 状态背景颜色，默认rgb(76, 76, 76)
  */
 @property (nonatomic, strong) UIColor *bottomBtnsDisableBgColor;
 
@@ -237,7 +237,7 @@
 @property (nonatomic, assign) BOOL showSelectedIndex;
 
 /**
- 选中图片右上角index background color, 默认rgb(80, 169, 56)
+ 选中图片右上角index background color, 默认rgb(52, 120, 246)
  */
 @property (nonatomic, strong) UIColor *indexLabelBgColor;
 

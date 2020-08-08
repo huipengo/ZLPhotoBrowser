@@ -61,7 +61,7 @@
     YYFPSLabel *label = [[YYFPSLabel alloc] initWithFrame:CGRectMake(kViewWidth - 100, 30, 100, 30)];
     [[UIApplication sharedApplication].keyWindow addSubview:label];
     [self initCollectionView];
-    
+    self.languageSegment.selectedSegmentIndex = 1;
     //    [UIApplication sharedApplication].statusBarHidden = YES;
 }
 
@@ -358,11 +358,6 @@
 - (BOOL)textFieldShouldReturn:(UITextField *)textField
 {
     return [textField resignFirstResponder];
-}
-
-- (void)didReceiveMemoryWarning {
-    [super didReceiveMemoryWarning];
-    // Dispose of any resources that can be recreated.
 }
 
 @end
