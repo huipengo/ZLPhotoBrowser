@@ -3,4 +3,4 @@
 //
 
 
-#import <ZLPhotoBrowser/ZLPhotoBrowser.h>
+#import <WB_ZLPhotoBrowser/ZLPhotoBrowser.h>
