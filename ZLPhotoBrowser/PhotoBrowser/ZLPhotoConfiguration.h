@@ -171,6 +171,9 @@
  */
 @property (nonatomic, assign) BOOL showSelectBtn;
 
+/** 默认 确定 */
+@property (nonatomic, copy) NSString *doneBtnTitle;
+
 /**
  导航条颜色，默认 rgb(54, 52, 51)
  */

@@ -193,9 +193,9 @@ static BOOL _sortAscending;
             
             if (collection.assetCollectionSubtype == PHAssetCollectionSubtypeSmartAlbumUserLibrary) {
                 //所有照片
-                ZLAlbumListModel *m = [self getAlbumModeWithTitle:title result:result allowSelectVideo:allowSelectVideo allowSelectImage:allowSelectImage];
-                m.isCameraRoll = YES;
-                [arrAlbum insertObject:m atIndex:0];
+//                ZLAlbumListModel *m = [self getAlbumModeWithTitle:title result:result allowSelectVideo:allowSelectVideo allowSelectImage:allowSelectImage];
+//                m.isCameraRoll = YES;
+//                [arrAlbum insertObject:m atIndex:0];
             } else {
                 [arrAlbum addObject:[self getAlbumModeWithTitle:title result:result allowSelectVideo:allowSelectVideo allowSelectImage:allowSelectImage]];
             }

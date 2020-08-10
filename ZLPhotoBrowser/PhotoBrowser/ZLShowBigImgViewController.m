@@ -11,7 +11,7 @@
 #import "ZLBigImageCell.h"
 #import "ZLDefine.h"
 #import "ToastUtils.h"
-#import "ZLAlbumListController.h"
+#import "ZLImageNavigationController.h"
 #import "ZLPhotoModel.h"
 #import "ZLPhotoManager.h"
 #import "ZLEditViewController.h"
@@ -238,7 +238,7 @@
     //right nav btn
     _navRightBtn = [UIButton buttonWithType:UIButtonTypeCustom];
     _navRightBtn.frame = CGRectMake(0, 0, 25, 25);
-    UIImage *normalImg = GetImageWithName(@"zl_btn_circle");
+    UIImage *normalImg = GetImageWithName(@"zl_btn_unselected");
     UIImage *selImg = GetImageWithName(@"zl_btn_selected");
     [_navRightBtn setBackgroundImage:normalImg forState:UIControlStateNormal];
     [_navRightBtn setBackgroundImage:selImg forState:UIControlStateSelected];

@@ -229,8 +229,10 @@
 - (void)setupUI
 {
     self.cancelBtn = [UIButton buttonWithType:UIButtonTypeCustom];
-    self.cancelBtn.titleLabel.font = [UIFont systemFontOfSize:15];
-    [self.cancelBtn setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
+    self.cancelBtn.titleLabel.font = [UIFont fontWithName:@"PingFangSC-Regular" size:17.0f];
+    UIColor *cancelColor = [UIColor whiteColor];
+    [self.cancelBtn setTitleColor:cancelColor forState:UIControlStateNormal];
+    [self.cancelBtn setTitleColor:[cancelColor colorWithAlphaComponent:0.6f] forState:UIControlStateHighlighted];
     [self.cancelBtn setTitle:GetLocalLanguageTextValue(ZLPhotoBrowserCancelText) forState:UIControlStateNormal];
     [self.cancelBtn addTarget:self action:@selector(cancelBtn_click) forControlEvents:UIControlEventTouchUpInside];
     [self.cancelBtn zl_enlargeValidTouchAreaWithInsets:UIEdgeInsetsMake(0, 0, 10, 10)];
@@ -238,9 +240,11 @@
     
     self.doneBtn = [UIButton buttonWithType:UIButtonTypeCustom];
     [self.doneBtn setTitle:GetLocalLanguageTextValue(ZLPhotoBrowserDoneText) forState:UIControlStateNormal];
-    [self.doneBtn setTitleColor:_configuration.bottomBtnsNormalTitleColor forState:UIControlStateNormal];
+    UIColor *doneColor = _configuration.bottomBtnsNormalTitleColor;
+    [self.doneBtn setTitleColor:doneColor forState:UIControlStateNormal];
+    [self.doneBtn setTitleColor:[doneColor colorWithAlphaComponent:0.6f] forState:UIControlStateHighlighted];
     self.doneBtn.backgroundColor = _configuration.bottomBtnsNormalBgColor;
-    self.doneBtn.titleLabel.font = [UIFont systemFontOfSize:15];
+    self.doneBtn.titleLabel.font = [UIFont fontWithName:@"PingFangSC-Medium" size:15.0f];
     self.doneBtn.layer.masksToBounds = YES;
     self.doneBtn.layer.cornerRadius = 3.0f;
     [self.doneBtn addTarget:self action:@selector(btnDone_click) forControlEvents:UIControlEventTouchUpInside];
@@ -372,19 +376,21 @@
     
     //旋转按钮
     UIView *view = [[UIView alloc] init];
-    view.backgroundColor = [[UIColor whiteColor] colorWithAlphaComponent:.8];
+    view.backgroundColor = [[UIColor blackColor] colorWithAlphaComponent:0.8f];
     view.hidden = YES;
     [self addSubview:view];
     _rotateRatioBtn = [UIButton buttonWithType:UIButtonTypeCustom];
     _rotateRatioBtn.frame = CGRectMake(15, 20, 40, 40);
     _rotateRatioBtn.imageView.contentMode = UIViewContentModeScaleAspectFit;
-    [_rotateRatioBtn setBackgroundImage:GetImageWithName(@"zl_btn_rotate") forState:UIControlStateNormal];
+    UIImage *rotate_image = [GetImageWithName(@"zl_btn_rotate") imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
+    _rotateRatioBtn.tintColor = [UIColor whiteColor];
+    [_rotateRatioBtn setBackgroundImage:rotate_image forState:UIControlStateNormal];
     [_rotateRatioBtn addTarget:self action:@selector(rotateRadioBtn_click) forControlEvents:UIControlEventTouchUpInside];
     [view addSubview:_rotateRatioBtn];
     
-    CGFloat W = 70;
-    CGFloat H = 80;
-    CGFloat x = 0;
+    CGFloat W = 70.0f;
+    CGFloat H = 80.0f;
+    CGFloat x = 0.0f;
     
     CGSize  imgSize = self.editImage.size;
     CGFloat maxW = MIN(imgSize.width, imgSize.height);

@@ -9,7 +9,7 @@
 #import "ZLPhotoActionSheet.h"
 #import "ZLCollectionCell.h"
 #import "ZLPhotoManager.h"
-#import "ZLAlbumListController.h"
+#import "ZLImageNavigationController.h"
 #import "ZLShowBigImgViewController.h"
 #import "ZLThumbnailViewController.h"
 #import "ZLNoAuthorityViewController.h"
@@ -978,8 +978,6 @@ double const ScalePhotoWidth = 1000;
 // 预览界面
 - (void)pushThumbnailViewController
 {
-//    ZLAlbumListController *albumListVC = [[ZLAlbumListController alloc] initWithStyle:UITableViewStylePlain];
-//    ZLImageNavigationController *nav = [self getImageNavWithRootVC:albumListVC];
     ZLThumbnailViewController *tvc = [[ZLThumbnailViewController alloc] init];
     ZLImageNavigationController *nav = [self getImageNavWithRootVC:tvc];
     [self.sender showDetailViewController:nav sender:nil];

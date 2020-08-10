@@ -89,6 +89,8 @@
     
 #pragma mark - 参数配置 optional，可直接使用 defaultPhotoConfiguration
     
+    actionSheet.configuration.doneBtnTitle = GetLocalLanguageTextValue(ZLPhotoBrowserSendText);;
+    
     //以下参数为自定义参数，均可不设置，有默认值
     actionSheet.configuration.sortAscending = self.sortSegment.selectedSegmentIndex==0;
     actionSheet.configuration.allowSelectImage = self.selImageSwitch.isOn;

@@ -8,7 +8,7 @@
 
 #import "ZLNoAuthorityViewController.h"
 #import "ZLDefine.h"
-#import "ZLAlbumListController.h"
+#import "ZLImageNavigationController.h"
 
 @interface ZLNoAuthorityViewController ()
 {

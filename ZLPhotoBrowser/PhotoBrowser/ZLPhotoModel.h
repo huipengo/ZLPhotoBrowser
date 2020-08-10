@@ -55,4 +55,6 @@ typedef NS_ENUM(NSUInteger, ZLAssetMediaType) {
 //待用
 @property (nonatomic, assign) NSUInteger selectedCount;
 
+@property (nonatomic, assign, getter=isSelected) BOOL selected;
+
 @end

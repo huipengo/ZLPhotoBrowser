@@ -52,6 +52,7 @@
     configuration.showCaptureImageOnTakePhotoBtn = YES;
     configuration.sortAscending = YES;
     configuration.showSelectBtn = NO;
+    configuration.doneBtnTitle = GetLocalLanguageTextValue(ZLPhotoBrowserDoneText);
     configuration.navBarColor = kRGB(54, 52, 51);
     configuration.navTitleColor = [UIColor whiteColor];
     configuration.previewTextColor = [UIColor blackColor];

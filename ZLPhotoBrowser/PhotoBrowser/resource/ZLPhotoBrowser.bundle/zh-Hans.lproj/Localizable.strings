@@ -5,6 +5,7 @@
 
 "ZLPhotoBrowserOriginalText" = "原图";
 "ZLPhotoBrowserDoneText" = "确定";
+"ZLPhotoBrowserSendText" = "发送";
 "ZLPhotoBrowserOKText" = "确定";
 
 "ZLPhotoBrowserBackText" = "返回";
@@ -51,7 +52,7 @@
 "ZLPhotoBrowserVideos" = "视频";
 "ZLPhotoBrowserFavorites" = "个人收藏";
 "ZLPhotoBrowserTimelapses" = "延时摄影";
-"ZLPhotoBrowserRecentlyAdded" = "最近添加";
+"ZLPhotoBrowserRecentlyAdded" = "最近项目";
 "ZLPhotoBrowserBursts" = "连拍快照";
 "ZLPhotoBrowserSlomoVideos" = "慢动作";
 "ZLPhotoBrowserSelfPortraits" = "自拍";

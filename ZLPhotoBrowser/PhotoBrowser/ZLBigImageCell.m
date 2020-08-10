@@ -11,7 +11,6 @@
 #import "ZLDefine.h"
 #import <Photos/Photos.h>
 #import "ZLPhotoModel.h"
-#import "ZLAlbumListController.h"
 #import <SDWebImage/UIImageView+WebCache.h>
 #import <SDWebImage/UIImage+Metadata.h>
 #import "ToastUtils.h"

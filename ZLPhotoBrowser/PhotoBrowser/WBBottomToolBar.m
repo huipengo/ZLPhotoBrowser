@@ -9,7 +9,7 @@
 #import "WBBottomToolBar.h"
 #import "ZLDefine.h"
 #import "ZLPhotoConfiguration.h"
-#import "ZLAlbumListController.h"
+#import "ZLImageNavigationController.h"
 #import "ZLPhotoManager.h"
 
 CGFloat const WBBottomToolBarHeight = 56.0f;
@@ -89,24 +89,30 @@ CGFloat const WBBottomToolBarHeight = 56.0f;
     CGFloat offsetY = 10.0f;
     CGFloat bottomBtnH = 33.0f;
     if (self.allowEdit) {
-        self.editButton.frame = CGRectMake(offsetX, offsetY, GetMatchValue(GetLocalLanguageTextValue(ZLPhotoBrowserEditText), 15.0f, YES, bottomBtnH), bottomBtnH);
+        UIFont *font = self.editButton.titleLabel.font;
+        self.editButton.frame = CGRectMake(offsetX, offsetY, GetMatchFontValue(GetLocalLanguageTextValue(ZLPhotoBrowserEditText), font, YES, bottomBtnH), bottomBtnH);
         offsetX = CGRectGetMaxX(self.editButton.frame) + 15.0f;
     }
     
-    self.previewButton.frame = CGRectMake(offsetX, offsetY, GetMatchValue(GetLocalLanguageTextValue(ZLPhotoBrowserPreviewText), 15.0f, YES, bottomBtnH), bottomBtnH);
-    offsetX = CGRectGetMaxX(self.previewButton.frame) + 10.0f;
+    if (self.source == WBPhotoBrowserThumbnail) {
+        UIFont *font = self.previewButton.titleLabel.font;
+        self.previewButton.frame = CGRectMake(offsetX, offsetY, GetMatchFontValue(GetLocalLanguageTextValue(ZLPhotoBrowserPreviewText), font, YES, bottomBtnH), bottomBtnH);
+        offsetX = CGRectGetMaxX(self.previewButton.frame) + 10.0f;
+    }
     
     if (self.allowSelectOriginal) {
         CGFloat photosBytes_w = 80.0f;
         offsetX = (self.frame.size.width - self.originalPhotoButton.frame.size.width) / 2.0f;
-        self.originalPhotoButton.frame = CGRectMake(offsetX, offsetY, GetMatchValue(GetLocalLanguageTextValue(ZLPhotoBrowserOriginalText), 15.0f, YES, bottomBtnH) + 30.0f, bottomBtnH);
+        UIFont *font = self.originalPhotoButton.titleLabel.font;
+        self.originalPhotoButton.frame = CGRectMake(offsetX, offsetY, GetMatchFontValue(GetLocalLanguageTextValue(ZLPhotoBrowserOriginalText), font, YES, bottomBtnH) + 30.0f, bottomBtnH);
         
         offsetX = CGRectGetMaxX(self.originalPhotoButton.frame);
         self.photosBytesLabel.frame = CGRectMake(offsetX, offsetY, photosBytes_w, bottomBtnH);
     }
     
-    CGFloat doneWidth = GetMatchValue(self.doneButton.currentTitle, 15.0f, YES, bottomBtnH);
-    doneWidth = MAX(70.0f, doneWidth);
+    UIFont *font = self.doneButton.titleLabel.font;
+    CGFloat doneWidth = GetMatchFontValue(self.doneButton.currentTitle, font, YES, bottomBtnH);
+    doneWidth = MAX(80.0f, doneWidth);
     self.doneButton.frame = CGRectMake(self.frame.size.width - doneWidth - 12.0f, offsetY, doneWidth, bottomBtnH);
     self.doneButton.layer.cornerRadius  = bottomBtnH / 2.0f;
     self.doneButton.layer.masksToBounds = YES;
@@ -126,7 +132,7 @@ CGFloat const WBBottomToolBarHeight = 56.0f;
             self.photosBytesLabel.text = nil;
         }
         self.originalPhotoButton.selected = self.nav.isSelectOriginalPhoto;
-        NSString *doneTitle = [NSString stringWithFormat:@"%@(%ld)", GetLocalLanguageTextValue(ZLPhotoBrowserDoneText), self.nav.arrSelectedModels.count];
+        NSString *doneTitle = [NSString stringWithFormat:@"%@(%ld)", self.configuration.doneBtnTitle, self.nav.arrSelectedModels.count];
         [self.doneButton setTitle:doneTitle forState:UIControlStateNormal];
         self.doneButton.backgroundColor = configuration.bottomBtnsNormalBgColor;
     }
@@ -136,7 +142,7 @@ CGFloat const WBBottomToolBarHeight = 56.0f;
         self.previewButton.enabled = NO;
         self.doneButton.enabled = NO;
         self.photosBytesLabel.text = nil;
-        [self.doneButton setTitle:GetLocalLanguageTextValue(ZLPhotoBrowserDoneText) forState:UIControlStateDisabled];
+        [self.doneButton setTitle:self.configuration.doneBtnTitle forState:UIControlStateDisabled];
         self.doneButton.backgroundColor = configuration.bottomBtnsDisableBgColor;
     }
     
@@ -177,9 +183,9 @@ CGFloat const WBBottomToolBarHeight = 56.0f;
             ZLPhotoModel *model = m;
             _doneButton.hidden = model.type == ZLAssetMediaTypeVideo;
         }
-        [_doneButton setTitle:[NSString stringWithFormat:@"%@(%ld)", GetLocalLanguageTextValue(ZLPhotoBrowserDoneText), self.nav.arrSelectedModels.count] forState:UIControlStateNormal];
+        [_doneButton setTitle:[NSString stringWithFormat:@"%@(%ld)", self.configuration.doneBtnTitle, self.nav.arrSelectedModels.count] forState:UIControlStateNormal];
     } else {
-        [_doneButton setTitle:GetLocalLanguageTextValue(ZLPhotoBrowserDoneText) forState:UIControlStateNormal];
+        [_doneButton setTitle:self.configuration.doneBtnTitle forState:UIControlStateNormal];
     }
 }
 
@@ -250,7 +256,7 @@ CGFloat const WBBottomToolBarHeight = 56.0f;
 #pragma mark -- getter
 - (UIVisualEffectView *)effectView {
     if (!_effectView) {
-        UIBlurEffect *effect = [UIBlurEffect effectWithStyle:UIBlurEffectStyleDark];
+        UIBlurEffect *effect = [UIBlurEffect effectWithStyle:[self wb_blurEffectStyle]];
         _effectView = [[UIVisualEffectView alloc] initWithEffect:effect];
     }
     return _effectView;
@@ -290,8 +296,13 @@ CGFloat const WBBottomToolBarHeight = 56.0f;
     if (!_originalPhotoButton) {
         _originalPhotoButton = [UIButton buttonWithType:UIButtonTypeCustom];
         _originalPhotoButton.titleLabel.font = [self wb_regularFontOfSize:15.0f];
-        [_originalPhotoButton setImage:GetImageWithName(@"zl_btn_original_circle") forState:UIControlStateNormal];
-        [_originalPhotoButton setImage:GetImageWithName(@"zl_btn_original_selected") forState:UIControlStateSelected];
+        UIImage *image_normal   = GetImageWithName(@"zl_btn_original_circle");
+        UIImage *image_selected = GetImageWithName(@"zl_btn_original_selected");
+        UIImage *image_disabled = GetImageWithName(@"zl_btn_original_circle_disabled");
+        [_originalPhotoButton setImage:image_normal   forState:UIControlStateNormal];
+        [_originalPhotoButton setImage:image_selected forState:UIControlStateSelected];
+        [_originalPhotoButton setImage:image_disabled forState:UIControlStateDisabled];
+
         [_originalPhotoButton setTitle:GetLocalLanguageTextValue(ZLPhotoBrowserOriginalText) forState:UIControlStateNormal];
         [_originalPhotoButton setTitleColor:self.configuration.bottomBtnsNormalTitleColor forState:UIControlStateNormal];
         [_originalPhotoButton setTitleColor:self.configuration.bottomBtnsDisableTitleColor forState:UIControlStateDisabled];
@@ -304,7 +315,7 @@ CGFloat const WBBottomToolBarHeight = 56.0f;
 - (UILabel *)photosBytesLabel {
     if (!_photosBytesLabel) {
         _photosBytesLabel = [[UILabel alloc] init];
-        _photosBytesLabel.font = [self wb_regularFontOfSize:15.0f];
+        _photosBytesLabel.font      = [self wb_regularFontOfSize:15.0f];
         _photosBytesLabel.textColor = self.configuration.bottomBtnsNormalTitleColor;
     }
     return _photosBytesLabel;
@@ -315,12 +326,27 @@ CGFloat const WBBottomToolBarHeight = 56.0f;
         _doneButton = [UIButton buttonWithType:UIButtonTypeCustom];
         _doneButton.titleLabel.font = [self wb_mediumFontOfSize:15.0f];
         _doneButton.backgroundColor = self.configuration.bottomBtnsNormalBgColor;
-        [_doneButton setTitle:GetLocalLanguageTextValue(ZLPhotoBrowserDoneText) forState:UIControlStateNormal];
+        [_doneButton setTitle:self.configuration.doneBtnTitle forState:UIControlStateNormal];
         [_doneButton setTitleColor:self.configuration.bottomBtnsNormalTitleColor forState:UIControlStateNormal];
         [_doneButton setTitleColor:self.configuration.bottomBtnsDisableTitleColor forState:UIControlStateDisabled];
         [_doneButton addTarget:self action:@selector(_doneAction:) forControlEvents:UIControlEventTouchUpInside];
     }
     return _doneButton;
+}
+
+- (UIBlurEffectStyle)wb_blurEffectStyle {
+    UIBlurEffectStyle style;
+    #if __IPHONE_OS_VERSION_MAX_ALLOWED >= 130000
+        if (@available(iOS 13.0, *)) {
+            style = UIBlurEffectStyleSystemThinMaterialDark;
+        } else
+    #endif
+        {
+    #if __IPHONE_OS_VERSION_MIN_REQUIRED < 130000
+            style = UIBlurEffectStyleDark;
+    #endif
+        }
+    return style;
 }
 
 - (UIFont *)wb_regularFontOfSize:(CGFloat)fontSize {

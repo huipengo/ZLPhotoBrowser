@@ -9,6 +9,9 @@
 
 ----------------------------------------
 
+> 原项目地址：https://github.com/longitachi/ZLPhotoBrowser.git
+> 本库为项目所需个人定制版本. Forked from v3.2.0. 非常感谢作者的开源奉献
+
 ### 运行Demo
 下载完Demo请执行`carthage update --platform iOS` （运行时候请选择 `Example` target）`SDWebImage.framework` 和 `SDWebImageMapKit.framework` 路径如果报错的话，关掉项目，重新打开即可
 

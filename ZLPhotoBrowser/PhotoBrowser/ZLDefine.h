@@ -18,6 +18,7 @@
 #define ZLPhotoBrowserCancelText @"ZLPhotoBrowserCancelText"
 #define ZLPhotoBrowserOriginalText @"ZLPhotoBrowserOriginalText"
 #define ZLPhotoBrowserDoneText @"ZLPhotoBrowserDoneText"
+#define ZLPhotoBrowserSendText @"ZLPhotoBrowserSendText"
 #define ZLPhotoBrowserOKText @"ZLPhotoBrowserOKText"
 #define ZLPhotoBrowserBackText @"ZLPhotoBrowserBackText"
 #define ZLPhotoBrowserPhotoText @"ZLPhotoBrowserPhotoText"
@@ -247,7 +248,7 @@ static inline UIImage * GetImageWithName(NSString *name) {
     return [UIImage imageNamed:kZLPhotoBrowserSrcName(name)]?:[UIImage imageNamed:kZLPhotoBrowserFrameworkSrcName(name)];
 }
 
-static inline CGFloat GetMatchValue(NSString *text, CGFloat fontSize, BOOL isHeightFixed, CGFloat fixedValue) {
+static inline CGFloat GetMatchFontValue(NSString *text, UIFont *font, BOOL isHeightFixed, CGFloat fixedValue) {
     CGSize size;
     if (isHeightFixed) {
         size = CGSizeMake(MAXFLOAT, fixedValue);
@@ -255,16 +256,22 @@ static inline CGFloat GetMatchValue(NSString *text, CGFloat fontSize, BOOL isHei
         size = CGSizeMake(fixedValue, MAXFLOAT);
     }
     
+    if (font == nil) { font = [UIFont systemFontOfSize:15.0f]; }
+    
     CGSize resultSize;
     if ([[[UIDevice currentDevice] systemVersion] doubleValue] >= 7.0) {
         //返回计算出的size
-        resultSize = [text boundingRectWithSize:size options:NSStringDrawingTruncatesLastVisibleLine | NSStringDrawingUsesFontLeading | NSStringDrawingUsesLineFragmentOrigin attributes:@{NSFontAttributeName: [UIFont systemFontOfSize:fontSize]} context:nil].size;
+        resultSize = [text boundingRectWithSize:size options:NSStringDrawingTruncatesLastVisibleLine | NSStringDrawingUsesFontLeading | NSStringDrawingUsesLineFragmentOrigin attributes:@{NSFontAttributeName: font} context:nil].size;
     }
     if (isHeightFixed) {
         return resultSize.width;
     } else {
         return resultSize.height;
     }
+}
+
+static inline CGFloat GetMatchValue(NSString *text, CGFloat fontSize, BOOL isHeightFixed, CGFloat fixedValue) {
+    return GetMatchFontValue(text, [UIFont systemFontOfSize:fontSize], isHeightFixed, fixedValue);
 }
 
 static inline void ShowAlert(NSString *message, UIViewController *sender) {

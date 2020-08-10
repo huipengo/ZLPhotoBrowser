@@ -8,7 +8,7 @@
 
 #import "ZLEditVideoController.h"
 #import "ZLDefine.h"
-#import "ZLAlbumListController.h"
+#import "ZLImageNavigationController.h"
 #import <AVFoundation/AVFoundation.h>
 #import "ZLPhotoManager.h"
 #import "ZLPhotoModel.h"

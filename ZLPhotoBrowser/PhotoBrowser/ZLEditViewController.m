@@ -12,7 +12,7 @@
 #import "ZLPhotoManager.h"
 #import "ToastUtils.h"
 #import "ZLProgressHUD.h"
-#import "ZLAlbumListController.h"
+#import "ZLImageNavigationController.h"
 #import "ZLImageEditTool.h"
 #import <Photos/Photos.h>
 
