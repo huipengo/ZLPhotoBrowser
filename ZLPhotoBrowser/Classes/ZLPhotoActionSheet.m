@@ -194,7 +194,7 @@ double const ScalePhotoWidth = 1000;
     
     self.animate = animate;
     self.preview = preview;
-    self.previousStatusBarStyle = [UIApplication sharedApplication].statusBarStyle;
+    self.previousStatusBarStyle    = [UIApplication sharedApplication].statusBarStyle;
     self.previousStatusBarIsHidden = [UIApplication sharedApplication].isStatusBarHidden;
     
     [ZLPhotoManager setSortAscending:self.configuration.sortAscending];

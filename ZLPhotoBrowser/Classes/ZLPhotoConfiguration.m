@@ -38,7 +38,7 @@
     configuration.allowEditVideo = NO;
     configuration.allowSelectOriginal = YES;
     configuration.maxEditVideoTime = 10;
-    configuration.maxVideoDuration = 120;
+    configuration.maxVideoDuration = 300;
     configuration.allowSlideSelect = YES;
     configuration.allowDragSelect = NO;
 //    configuration.editType = ZLImageEditTypeClip;

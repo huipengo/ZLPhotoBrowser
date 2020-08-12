@@ -9,6 +9,7 @@
 #import "ZLPhotoManager.h"
 #import <AVFoundation/AVFoundation.h>
 #import "ZLDefine.h"
+#import <SDWebImage/UIImage+MultiFormat.h>
 
 static BOOL _sortAscending;
 
@@ -139,7 +140,7 @@ static BOOL _sortAscending;
     if (!allowSelectImage) option.predicate = [NSPredicate predicateWithFormat:@"mediaType == %ld",PHAssetMediaTypeVideo];
     if (!self.sortAscending) option.sortDescriptors = @[[NSSortDescriptor sortDescriptorWithKey:@"creationDate" ascending:self.sortAscending]];
     
-    //获取所有智能相册
+    // 获取所有智能相册
     PHFetchResult *smartAlbums = [PHAssetCollection fetchAssetCollectionsWithType:PHAssetCollectionTypeSmartAlbum subtype:PHAssetCollectionSubtypeAlbumRegular options:nil];
     PHFetchResult *streamAlbums = [PHAssetCollection fetchAssetCollectionsWithType:PHAssetCollectionTypeAlbum subtype:PHAssetCollectionSubtypeAlbumMyPhotoStream options:nil];
     PHFetchResult *userAlbums = [PHCollectionList fetchTopLevelUserCollectionsWithOptions:nil];
@@ -180,24 +181,28 @@ static BOOL _sortAscending;
     NSMutableArray<ZLAlbumListModel *> *arrAlbum = [NSMutableArray array];
     for (PHFetchResult<PHAssetCollection *> *album in arrAllAlbums) {
         [album enumerateObjectsUsingBlock:^(PHAssetCollection * _Nonnull collection, NSUInteger idx, BOOL *stop) {
-            //过滤PHCollectionList对象
+            // 过滤PHCollectionList对象
             if (![collection isKindOfClass:PHAssetCollection.class]) return;
-            //过滤最近删除和已隐藏
+            // 过滤最近删除 和 已隐藏 和 所有照片
             if (collection.assetCollectionSubtype > 215 ||
-                collection.assetCollectionSubtype == PHAssetCollectionSubtypeSmartAlbumAllHidden) return;
-            //获取相册内asset result
+                collection.assetCollectionSubtype == PHAssetCollectionSubtypeSmartAlbumAllHidden ||
+                collection.assetCollectionSubtype == PHAssetCollectionSubtypeSmartAlbumUserLibrary) return;
+            // 获取相册内asset result
             PHFetchResult<PHAsset *> *result = [PHAsset fetchAssetsInAssetCollection:collection options:option];
             if (!result.count) return;
             
             NSString *title = [self getCollectionTitle:collection];
             
-            if (collection.assetCollectionSubtype == PHAssetCollectionSubtypeSmartAlbumUserLibrary) {
-                //所有照片
-//                ZLAlbumListModel *m = [self getAlbumModeWithTitle:title result:result allowSelectVideo:allowSelectVideo allowSelectImage:allowSelectImage];
-//                m.isCameraRoll = YES;
-//                [arrAlbum insertObject:m atIndex:0];
-            } else {
-                [arrAlbum addObject:[self getAlbumModeWithTitle:title result:result allowSelectVideo:allowSelectVideo allowSelectImage:allowSelectImage]];
+            ZLAlbumListModel *model = [self getAlbumModeWithTitle:title
+                                                           result:result
+                                                 allowSelectVideo:allowSelectVideo
+                                                 allowSelectImage:allowSelectImage];
+            // 最近项目
+            if (collection.assetCollectionSubtype == PHAssetCollectionSubtypeSmartAlbumRecentlyAdded) {
+                [arrAlbum insertObject:model atIndex:0];
+            }
+            else {
+                [arrAlbum addObject:model];
             }
         }];
     }
@@ -208,18 +213,23 @@ static BOOL _sortAscending;
 + (NSString *)getCollectionTitle:(PHAssetCollection *)collection
 {
     if (collection.assetCollectionType == PHAssetCollectionTypeAlbum) {
-        //用户相册
+        // 用户相册
         return collection.localizedTitle;
     }
     
-    //系统相册
+    // 系统相册
     ZLLanguageType type = [[[NSUserDefaults standardUserDefaults] valueForKey:ZLLanguageTypeKey] integerValue];
     
     NSString *title = nil;
     
     if (type == ZLLanguageSystem) {
-        title = collection.localizedTitle;
-    } else {
+        if (collection.assetCollectionSubtype == PHAssetCollectionSubtypeSmartAlbumRecentlyAdded) {
+            title = GetLocalLanguageTextValue(ZLPhotoBrowserRecentlyAdded);
+        } else {
+            title = collection.localizedTitle;
+        }
+    }
+    else {
         switch (collection.assetCollectionSubtype) {
             case PHAssetCollectionSubtypeSmartAlbumUserLibrary:
                 title = GetLocalLanguageTextValue(ZLPhotoBrowserCameraRoll);
@@ -257,16 +267,15 @@ static BOOL _sortAscending;
             case PHAssetCollectionSubtypeSmartAlbumLivePhotos:
                 title = GetLocalLanguageTextValue(ZLPhotoBrowserLivePhotos);
                 break;
+            case PHAssetCollectionSubtypeSmartAlbumAnimated:
+                title = GetLocalLanguageTextValue(ZLPhotoBrowserAnimated);
+                break;
+            case PHAssetCollectionSubtypeSmartAlbumLongExposures:
+                title = GetLocalLanguageTextValue(ZLPhotoBrowserLongExposures);
+                break;
                 
             default:
                 break;
-        }
-        
-        if (@available(iOS 11, *)) {
-            //            PHAssetCollectionSubtypeSmartAlbumAnimated 为动图，但是貌似苹果返回的结果有bug，动图的subtype值为 215，即PHAssetCollectionSubtypeSmartAlbumLongExposures
-            if (collection.assetCollectionSubtype == 215) {
-                title = GetLocalLanguageTextValue(ZLPhotoBrowserAnimated);
-            }
         }
     }
     
@@ -401,6 +410,40 @@ static BOOL _sortAscending;
             CGFloat width = MIN(kViewWidth, kMaxImageWidth);
             CGSize size = CGSizeMake(width*scale, width*scale*model.asset.pixelHeight/model.asset.pixelWidth);
             [self requestImageForAsset:model.asset size:size progressHandler:nil completion:completion];
+        }
+    }
+}
+
++ (void)requestSelectedImageDataForAsset:(PHAsset *)asset isOriginal:(BOOL)isOriginal allowSelectGif:(BOOL)allowSelectGif completion:(void (^)(NSData *data, UIImage *image, NSDictionary *info))completion {
+    if (allowSelectGif && ([self transformAssetType:asset] == ZLAssetMediaTypeGif)) {
+        [self requestOriginalImageDataForAsset:asset progressHandler:nil completion:^(NSData *data, NSDictionary *info) {
+            if ([[info objectForKey:PHImageResultIsDegradedKey] boolValue]) return;
+            
+            UIImage *image = [ZLPhotoManager transformToGifImageWithData:data];
+            if (completion) { completion(data, image, info); }
+        }];
+    } else {
+        if (isOriginal) {
+            [self requestOriginalImageForAsset:asset progressHandler:nil completion:^(UIImage *image, NSDictionary *info) {
+                if ([[info objectForKey:PHImageResultIsDegradedKey] boolValue]) return;
+                
+                if (completion) {
+                    NSData *data = [image sd_imageData];
+                    completion(data, image, info);
+                }
+            }];
+        } else {
+            CGFloat scale = 2;
+            CGFloat width = MIN(kViewWidth, kMaxImageWidth);
+            CGSize size = CGSizeMake(width*scale, width*scale*asset.pixelHeight/asset.pixelWidth);
+            [self requestImageForAsset:asset size:size progressHandler:nil completion:^(UIImage *image, NSDictionary *info) {
+                if ([[info objectForKey:PHImageResultIsDegradedKey] boolValue]) return;
+                
+                if (completion) {
+                    NSData *data = [image sd_imageData];
+                    completion(data, image, info);
+                }
+            }];
         }
     }
 }

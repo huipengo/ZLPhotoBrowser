@@ -118,7 +118,7 @@
 @property (nonatomic, assign) NSInteger maxEditVideoTime;
 
 /**
- 允许选择视频的最大时长，单位：秒， 默认 120s
+ 允许选择视频的最大时长，单位：秒， 默认 300s
  */
 @property (nonatomic, assign) NSInteger maxVideoDuration;
 

@@ -9,8 +9,10 @@
 
 ----------------------------------------
 
+### 声明
 > 原项目地址：https://github.com/longitachi/ZLPhotoBrowser.git
-> 本库为项目所需个人定制版本. Forked from v3.2.0. 非常感谢作者的开源奉献
+> 本库为项目所需个人定制版本. Forked from v3.2.0. 
+> 非常感谢作者的开源奉献
 
 ### 运行Demo
 运行时候请选择 `Example` 下的 `ZLPhotoBrowser.xcworkspace`

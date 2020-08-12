@@ -85,19 +85,20 @@ CGFloat const WBBottomToolBarHeight = 56.0f;
     self.line.frame = CGRectMake(0.0f, 0.0f, self.frame.size.width, 1.0f / [UIScreen mainScreen].scale);
     self.effectView.frame = self.bounds;
     
-    CGFloat offsetX = 15.0f;
-    CGFloat offsetY = 10.0f;
+    CGFloat offsetX    = 15.0f;
+    CGFloat offsetY    = 10.0f;
     CGFloat bottomBtnH = 33.0f;
-    if (self.allowEdit) {
-        UIFont *font = self.editButton.titleLabel.font;
-        self.editButton.frame = CGRectMake(offsetX, offsetY, GetMatchFontValue(GetLocalLanguageTextValue(ZLPhotoBrowserEditText), font, YES, bottomBtnH), bottomBtnH);
-        offsetX = CGRectGetMaxX(self.editButton.frame) + 15.0f;
-    }
     
     if (self.source == WBPhotoBrowserThumbnail) {
         UIFont *font = self.previewButton.titleLabel.font;
         self.previewButton.frame = CGRectMake(offsetX, offsetY, GetMatchFontValue(GetLocalLanguageTextValue(ZLPhotoBrowserPreviewText), font, YES, bottomBtnH), bottomBtnH);
-        offsetX = CGRectGetMaxX(self.previewButton.frame) + 10.0f;
+        offsetX = CGRectGetMaxX(self.previewButton.frame) + 15.0f;
+    }
+    
+    if (self.allowEdit) {
+        UIFont *font = self.editButton.titleLabel.font;
+        self.editButton.frame = CGRectMake(offsetX, offsetY, GetMatchFontValue(GetLocalLanguageTextValue(ZLPhotoBrowserEditText), font, YES, bottomBtnH), bottomBtnH);
+        offsetX = CGRectGetMaxX(self.editButton.frame) + 10.0f;
     }
     
     if (self.allowSelectOriginal) {
@@ -154,8 +155,7 @@ CGFloat const WBBottomToolBarHeight = 56.0f;
         (m.type == ZLAssetMediaTypeLivePhoto && !configuration.allowSelectLivePhoto))) ||
         (configuration.allowEditVideo && m.type == ZLAssetMediaTypeVideo && round(m.asset.duration) >= configuration.maxEditVideoTime);
     }
-    [self.editButton setTitleColor:canEdit?configuration.bottomBtnsNormalTitleColor:configuration.bottomBtnsDisableTitleColor forState:UIControlStateNormal];
-    self.editButton.userInteractionEnabled = canEdit;
+    self.editButton.enabled = canEdit;
 }
 
 #pragma mark -- show big image vc
@@ -275,6 +275,7 @@ CGFloat const WBBottomToolBarHeight = 56.0f;
         _editButton = [UIButton buttonWithType:UIButtonTypeCustom];
         _editButton.titleLabel.font = [self wb_regularFontOfSize:15.0f];
         [_editButton setTitle:GetLocalLanguageTextValue(ZLPhotoBrowserEditText) forState:UIControlStateNormal];
+        [self configButtonTitleColor:_editButton];
         [_editButton addTarget:self action:@selector(_editAction:) forControlEvents:UIControlEventTouchUpInside];
     }
     return _editButton;
@@ -285,8 +286,7 @@ CGFloat const WBBottomToolBarHeight = 56.0f;
         _previewButton = [UIButton buttonWithType:UIButtonTypeCustom];
         _previewButton.titleLabel.font = [self wb_regularFontOfSize:15.0f];
         [_previewButton setTitle:GetLocalLanguageTextValue(ZLPhotoBrowserPreviewText) forState:UIControlStateNormal];
-        [_previewButton setTitleColor:self.configuration.bottomBtnsNormalTitleColor forState:UIControlStateNormal];
-        [_previewButton setTitleColor:self.configuration.bottomBtnsDisableTitleColor forState:UIControlStateDisabled];
+        [self configButtonTitleColor:_previewButton];
         [_previewButton addTarget:self action:@selector(_previewAction:) forControlEvents:UIControlEventTouchUpInside];
     }
     return _previewButton;
@@ -304,8 +304,7 @@ CGFloat const WBBottomToolBarHeight = 56.0f;
         [_originalPhotoButton setImage:image_disabled forState:UIControlStateDisabled];
 
         [_originalPhotoButton setTitle:GetLocalLanguageTextValue(ZLPhotoBrowserOriginalText) forState:UIControlStateNormal];
-        [_originalPhotoButton setTitleColor:self.configuration.bottomBtnsNormalTitleColor forState:UIControlStateNormal];
-        [_originalPhotoButton setTitleColor:self.configuration.bottomBtnsDisableTitleColor forState:UIControlStateDisabled];
+        [self configButtonTitleColor:_originalPhotoButton];
         [_originalPhotoButton addTarget:self action:@selector(_originalPhotoAction:) forControlEvents:UIControlEventTouchUpInside];
         [_originalPhotoButton setImageEdgeInsets:UIEdgeInsetsMake(0.0f, -5.0f, 0.0f, 5.0f)];
     }
@@ -327,8 +326,7 @@ CGFloat const WBBottomToolBarHeight = 56.0f;
         _doneButton.titleLabel.font = [self wb_mediumFontOfSize:15.0f];
         _doneButton.backgroundColor = self.configuration.bottomBtnsNormalBgColor;
         [_doneButton setTitle:self.configuration.doneBtnTitle forState:UIControlStateNormal];
-        [_doneButton setTitleColor:self.configuration.bottomBtnsNormalTitleColor forState:UIControlStateNormal];
-        [_doneButton setTitleColor:self.configuration.bottomBtnsDisableTitleColor forState:UIControlStateDisabled];
+        [self configButtonTitleColor:_doneButton];
         [_doneButton addTarget:self action:@selector(_doneAction:) forControlEvents:UIControlEventTouchUpInside];
     }
     return _doneButton;
@@ -347,6 +345,13 @@ CGFloat const WBBottomToolBarHeight = 56.0f;
     #endif
         }
     return style;
+}
+
+- (void)configButtonTitleColor:(UIButton *)sender {
+    UIColor *titleColor = self.configuration.bottomBtnsNormalTitleColor;
+    [sender setTitleColor:titleColor forState:UIControlStateNormal];
+    [sender setTitleColor:[titleColor colorWithAlphaComponent:0.6f] forState:UIControlStateHighlighted];
+    [sender setTitleColor:self.configuration.bottomBtnsDisableTitleColor forState:UIControlStateDisabled];
 }
 
 - (UIFont *)wb_regularFontOfSize:(CGFloat)fontSize {

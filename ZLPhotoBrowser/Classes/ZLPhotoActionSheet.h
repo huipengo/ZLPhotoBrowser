@@ -87,7 +87,7 @@ NS_ASSUME_NONNULL_BEGIN
  @param index 点击的照片索引
  @param isOriginal 是否为原图
  */
-- (void)previewSelectedPhotos:(NSArray<UIImage *> *)photos assets:(NSArray<PHAsset *> *)assets index:(NSInteger)index isOriginal:(BOOL)isOriginal;
+- (void)previewSelectedPhotos:(NSArray<UIImage *> * _Nullable)photos assets:(NSArray<PHAsset *> *)assets index:(NSInteger)index isOriginal:(BOOL)isOriginal;
 
 
 /**

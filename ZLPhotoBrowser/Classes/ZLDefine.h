@@ -62,6 +62,8 @@
 #define ZLPhotoBrowserDepthEffect @"ZLPhotoBrowserDepthEffect"
 #define ZLPhotoBrowserLivePhotos @"ZLPhotoBrowserLivePhotos"
 #define ZLPhotoBrowserAnimated @"ZLPhotoBrowserAnimated"
+#define ZLPhotoBrowserLongExposures @"ZLPhotoBrowserLongExposures"
+
 #define ZLPhotoBrowserMaxVideoSelectCountInMix @"ZLPhotoBrowserMaxVideoSelectCountInMix"
 #define ZLPhotoBrowserMinVideoSelectCountInMix @"ZLPhotoBrowserMinVideoSelectCountInMix"
 

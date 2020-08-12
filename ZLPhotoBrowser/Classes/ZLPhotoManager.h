@@ -65,6 +65,7 @@ NS_ASSUME_NONNULL_BEGIN
  */
 + (void)requestSelectedImageForAsset:(ZLPhotoModel *)model isOriginal:(BOOL)isOriginal allowSelectGif:(BOOL)allowSelectGif completion:(void (^)(UIImage *, NSDictionary *))completion;
 
++ (void)requestSelectedImageDataForAsset:(PHAsset *)asset isOriginal:(BOOL)isOriginal allowSelectGif:(BOOL)allowSelectGif completion:(void (^)(NSData *data, UIImage *image, NSDictionary *info))completion;
 
 /**
  获取原图data，转换gif图

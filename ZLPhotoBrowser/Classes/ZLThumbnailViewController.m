@@ -748,9 +748,9 @@ typedef NS_ENUM(NSUInteger, SlideSelectType) {
         ZLPhotoModel *m = self.arrDataSources[row];
         __block BOOL shouldShow = NO;
         __block NSInteger index = 0;
-        [nav.arrSelectedModels enumerateObjectsUsingBlock:^(ZLPhotoModel * _Nonnull obj1, NSUInteger idx1, BOOL * _Nonnull stop) {
-            if ([obj1.asset.localIdentifier isEqualToString:m.asset.localIdentifier]) {
-                index = idx1 + 1;
+        [nav.arrSelectedModels enumerateObjectsUsingBlock:^(ZLPhotoModel * _Nonnull s_obj, NSUInteger s_idx, BOOL * _Nonnull stop) {
+            if ([s_obj.asset.localIdentifier isEqualToString:m.asset.localIdentifier]) {
+                index = s_idx + 1;
                 shouldShow = YES;
                 *stop = YES;
             }

@@ -90,7 +90,7 @@
     
 #pragma mark - 参数配置 optional，可直接使用 defaultPhotoConfiguration
     
-    actionSheet.configuration.doneBtnTitle = GetLocalLanguageTextValue(ZLPhotoBrowserSendText);;
+    actionSheet.configuration.doneBtnTitle = GetLocalLanguageTextValue(ZLPhotoBrowserSendText);
     
     //以下参数为自定义参数，均可不设置，有默认值
     actionSheet.configuration.sortAscending = self.sortSegment.selectedSegmentIndex==0;
@@ -167,7 +167,7 @@
         [self.collectionView reloadData];
         NSLog(@"image:%@", images);
         //解析图片
-        if (!self.allowAnialysisAssetSwitch.isOn) {
+        if (self.allowAnialysisAssetSwitch.isOn) {
             [self anialysisAssets:assets original:isOriginal];
         }
     }];
@@ -185,6 +185,8 @@
 
 - (void)anialysisAssets:(NSArray<PHAsset *> *)assets original:(BOOL)original
 {
+    if (assets.count == 0) { return; }
+    
     ZLProgressHUD *hud = [[ZLProgressHUD alloc] init];
     //该hud自动15s消失，请使用自己项目中的hud控件
     [hud show];
@@ -200,11 +202,13 @@
     }];
 }
 
+// 预览
 - (IBAction)btnSelectPhotoPreview:(id)sender
 {
     [self showWithPreview:YES];
 }
 
+// 相册
 - (IBAction)btnSelectPhotoLibrary:(id)sender
 {
     [self showWithPreview:NO];
@@ -221,6 +225,7 @@
     }
 }
 
+// 拍照
 - (IBAction)showCamera:(id)sender
 {
     ZLCustomCamera *camera = [[ZLCustomCamera alloc] init];
@@ -234,6 +239,7 @@
     [self showDetailViewController:camera sender:nil];
 }
 
+// 编辑本地视频
 - (IBAction)eidtVideo:(id)sender
 {
     NSString *path = [[NSBundle mainBundle] pathForResource:@"bee" ofType:@"mp4"];
@@ -304,7 +310,10 @@
 
 - (void)collectionView:(UICollectionView *)collectionView didSelectItemAtIndexPath:(NSIndexPath *)indexPath
 {
-    [[self getPas] previewSelectedPhotos:self.lastSelectPhotos assets:self.lastSelectAssets index:indexPath.row isOriginal:self.isOriginal];
+    [[self getPas] previewSelectedPhotos:self.lastSelectPhotos
+                                  assets:self.lastSelectAssets
+                                   index:indexPath.row
+                              isOriginal:self.isOriginal];
 }
 
 - (IBAction)btnPreviewNetImageClick:(id)sender

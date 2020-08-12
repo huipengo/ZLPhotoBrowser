@@ -458,13 +458,17 @@
             }
         }
         if (self.arrSelPhotos) {
+            NSInteger _selected = _currentPage - 1;
+            PHAsset *sel_asset = _arrSelAssetsBackup[_selected];
             for (PHAsset *asset in _arrSelAssets) {
-                if ([asset isEqual:_arrSelAssetsBackup[_currentPage-1]]) {
+                if ([asset isEqual:sel_asset]) {
                     [_arrSelAssets removeObject:asset];
                     break;
                 }
             }
-            [self.arrSelPhotos removeObject:_arrSelPhotosBackup[_currentPage-1]];
+            if (self.arrSelPhotos.count > 0 && (_arrSelPhotosBackup.count > _selected)) {
+                [self.arrSelPhotos removeObject:_arrSelPhotosBackup[_selected]];
+            }
         }
         
         [self resetIndexLabelState:NO];
