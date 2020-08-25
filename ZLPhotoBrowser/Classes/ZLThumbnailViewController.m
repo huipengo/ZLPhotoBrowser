@@ -103,16 +103,18 @@ typedef NS_ENUM(NSUInteger, SlideSelectType) {
 - (void)_handleAlbumListModelWithHud:(ZLProgressHUD *)hud {
     if (_configuration.allowTakePhotoInLibrary &&
         (_configuration.allowSelectImage || _configuration.allowRecordVideo) &&
-        self.albumListModel.isCameraRoll) {
+        ((self.albumListModel == nil) || self.albumListModel.isCameraRoll)) {
         self.allowTakePhoto = YES;
     }
     
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-        self.albumListModel.models = [self _photoModels];
+        if (self.albumListModel) {
+            self.albumListModel.models = [self _photoModels];
+        }
         dispatch_async(dispatch_get_main_queue(), ^{
             [hud hide];
             
-            if (self.menuItems) {
+            if (self.menuItems && self.menuItems.count > 0) {
                 [self.menuView reloadData];
             }
             else {
@@ -135,8 +137,11 @@ typedef NS_ENUM(NSUInteger, SlideSelectType) {
 }
 
 - (void)_loadDataFinished {
-    ZLImageNavigationController *nav = (ZLImageNavigationController *)self.navigationController;
-    [ZLPhotoManager markSelectModelInArr:self.albumListModel.models selArr:nav.arrSelectedModels];
+    if (self.albumListModel) {
+        ZLImageNavigationController *nav = (ZLImageNavigationController *)self.navigationController;
+        [ZLPhotoManager markSelectModelInArr:self.albumListModel.models selArr:nav.arrSelectedModels];
+    }
+    
     [self.arrDataSources removeAllObjects];
     [self.arrDataSources addObjectsFromArray:self.albumListModel.models];
     
@@ -1130,8 +1135,11 @@ typedef NS_ENUM(NSUInteger, SlideSelectType) {
 
 #pragma mark - WBDropMenuDelegate
 - (ZLAlbumListModel *)menuItemForRow:(NSInteger)row {
-    ZLAlbumListModel *item = [self.menuItems objectAtIndex:row];
-    return item;
+    if (self.menuItems.count > row) {
+        ZLAlbumListModel *item = [self.menuItems objectAtIndex:row];
+        return item;
+    }
+    return nil;
 }
 
 - (NSInteger)menuNumberOfRows {

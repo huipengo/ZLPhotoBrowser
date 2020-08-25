@@ -179,14 +179,14 @@ static BOOL _sortAscending;
      PHAssetCollectionSubtypeAny = NSIntegerMax /////所有类型
      */
     NSMutableArray<ZLAlbumListModel *> *arrAlbum = [NSMutableArray array];
+    __block ZLAlbumListModel *albumUserLibrary = nil;
     for (PHFetchResult<PHAssetCollection *> *album in arrAllAlbums) {
         [album enumerateObjectsUsingBlock:^(PHAssetCollection * _Nonnull collection, NSUInteger idx, BOOL *stop) {
             // 过滤PHCollectionList对象
             if (![collection isKindOfClass:PHAssetCollection.class]) return;
-            // 过滤最近删除 和 已隐藏 和 所有照片
+            // 过滤最近删除 和 已隐藏
             if (collection.assetCollectionSubtype > 215 ||
-                collection.assetCollectionSubtype == PHAssetCollectionSubtypeSmartAlbumAllHidden ||
-                collection.assetCollectionSubtype == PHAssetCollectionSubtypeSmartAlbumUserLibrary) return;
+                collection.assetCollectionSubtype == PHAssetCollectionSubtypeSmartAlbumAllHidden) return;
             // 获取相册内asset result
             PHFetchResult<PHAsset *> *result = [PHAsset fetchAssetsInAssetCollection:collection options:option];
             if (!result.count) return;
@@ -197,8 +197,13 @@ static BOOL _sortAscending;
                                                            result:result
                                                  allowSelectVideo:allowSelectVideo
                                                  allowSelectImage:allowSelectImage];
+            // 所有照片
+            if (collection.assetCollectionSubtype == PHAssetCollectionSubtypeSmartAlbumUserLibrary) {
+                model.isCameraRoll = YES;
+                albumUserLibrary = model;
+            }
             // 最近项目
-            if (collection.assetCollectionSubtype == PHAssetCollectionSubtypeSmartAlbumRecentlyAdded) {
+            else if (collection.assetCollectionSubtype == PHAssetCollectionSubtypeSmartAlbumRecentlyAdded) {
                 [arrAlbum insertObject:model atIndex:0];
             }
             else {
@@ -207,7 +212,11 @@ static BOOL _sortAscending;
         }];
     }
     
-    if (complete) complete(arrAlbum);
+    if ((arrAlbum.count == 0) && albumUserLibrary) {
+        [arrAlbum addObject:albumUserLibrary];
+    }
+    
+    if (complete) { complete(arrAlbum); }
 }
 
 + (NSString *)getCollectionTitle:(PHAssetCollection *)collection
