@@ -159,12 +159,17 @@ static CGFloat const wb_menu_cell_height   = 55.0f;
     return nil;
 }
 
-- (CGPoint)_positionInSuperView {
-    UIEdgeInsets inset = UIEdgeInsetsZero;
-    if (@available(iOS 11, *)) {
-        inset = self.contentView.safeAreaInsets;
+- (UIEdgeInsets)_menuViewContentInset {
+    if (self.delegate && [self.delegate respondsToSelector:@selector(menuViewContentInset)]) {
+        return [self.delegate menuViewContentInset];
     }
-    return CGPointMake(inset.left, inset.top);
+    else {
+        UIEdgeInsets inset = UIEdgeInsetsZero;
+        if (@available(iOS 11, *)) {
+            inset = self.contentView.safeAreaInsets;
+        }
+        return inset;
+    }
 }
 
 #pragma mark --
@@ -210,8 +215,9 @@ static CGFloat const wb_menu_cell_height   = 55.0f;
 
 - (UITableView *)tableView {
     if (!_tableView) {
-        CGPoint point = [self _positionInSuperView];
-        CGRect frame  = CGRectMake(point.x, point.y, [UIScreen mainScreen].bounds.size.width, 0.0);
+        UIEdgeInsets contentInset = [self _menuViewContentInset];
+        CGRect frame  = CGRectMake(contentInset.left, contentInset.top,
+                                   [UIScreen mainScreen].bounds.size.width, 0.0f);
         _tableView = [[UITableView alloc] initWithFrame:frame style:UITableViewStylePlain];
         _tableView.tableFooterView = [[UIView alloc] init];
         _tableView.backgroundColor = [WBDropMenuUtil wb_backgroundColor];

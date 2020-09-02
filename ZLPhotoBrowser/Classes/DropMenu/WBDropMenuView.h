@@ -17,6 +17,8 @@ NS_ASSUME_NONNULL_BEGIN
 @required
 - (void)menuView:(WBDropMenuView *)menuView didSelectRowAtIndexPath:(NSIndexPath *)indexPath;
 
+- (UIEdgeInsets)menuViewContentInset;
+
 @end
 
 #pragma mark - 数据源

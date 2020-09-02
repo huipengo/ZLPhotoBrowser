@@ -162,7 +162,7 @@ typedef NS_ENUM(NSUInteger, SlideSelectType) {
         else
     #endif
         {
-            self.automaticallyAdjustsScrollViewInsets = true;
+            self.automaticallyAdjustsScrollViewInsets = YES;
         }
     self.edgesForExtendedLayout = UIRectEdgeAll;
     
@@ -223,13 +223,19 @@ typedef NS_ENUM(NSUInteger, SlideSelectType) {
     
     CGFloat width = kViewWidth - inset.left - inset.right;
     self.collectionView.frame = CGRectMake(inset.left, 0.0f, width, kViewHeight);
-    UIEdgeInsets contentInset = UIEdgeInsetsMake(0.0f, inset.left, bottomViewH, inset.right);
-    self.collectionView.contentInset = contentInset;
-    if (@available(iOS 11.1, *)) {
-        self.collectionView.verticalScrollIndicatorInsets = contentInset;
+        
+    UIEdgeInsets contentInset = UIEdgeInsetsZero;
+    if (@available(iOS 11.0, *)) {
+        contentInset = UIEdgeInsetsMake(0.0f, inset.left, bottomViewH, inset.right);
+        if (@available(iOS 11.1, *)) {
+            self.collectionView.verticalScrollIndicatorInsets = contentInset;
+        }
     } else {
-        // Fallback on earlier versions
+        UIEdgeInsets o_contentInset = self.collectionView.contentInset;
+        contentInset = UIEdgeInsetsMake(o_contentInset.top, inset.left, bottomViewH, inset.right);
+        self.collectionView.scrollIndicatorInsets = contentInset;
     }
+    self.collectionView.contentInset = contentInset;
     
     if (!showBottomView) return;
     
@@ -1154,6 +1160,16 @@ typedef NS_ENUM(NSUInteger, SlideSelectType) {
             [self _loadDataFinished];
         });
     });
+}
+
+- (UIEdgeInsets)menuViewContentInset {
+    UIEdgeInsets inset = UIEdgeInsetsZero;
+    if (@available(iOS 11, *)) {
+        inset = self.view.safeAreaInsets;
+    } else {
+        inset = self.collectionView.contentInset;
+    }
+    return inset;
 }
 
 #pragma mark -- getter
