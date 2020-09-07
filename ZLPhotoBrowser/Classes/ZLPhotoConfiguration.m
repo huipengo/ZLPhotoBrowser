@@ -32,7 +32,7 @@
     configuration.allowSelectVideo = YES;
     configuration.allowSelectGif = YES;
     configuration.allowSelectLivePhoto = NO;
-    configuration.allowTakePhotoInLibrary = YES;
+    configuration.allowTakePhotoInLibrary = NO;
     configuration.allowForceTouch = YES;
     configuration.allowEditImage = YES;
     configuration.allowEditVideo = NO;

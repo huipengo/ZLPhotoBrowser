@@ -77,7 +77,6 @@ typedef NS_ENUM(NSUInteger, SlideSelectType) {
 - (void)dealloc
 {
     [[NSNotificationCenter defaultCenter] removeObserver:self];
-//    NSLog(@"---- %s", __FUNCTION__);
 }
 
 - (void)_loadData {

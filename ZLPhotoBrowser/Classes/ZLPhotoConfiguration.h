@@ -79,7 +79,7 @@
 @property (nonatomic, assign) BOOL allowSelectLivePhoto;
 
 /**
- 是否允许相册内部拍照 默认YES
+ 是否允许相册内部拍照 默认NO
  */
 @property (nonatomic, assign) BOOL allowTakePhotoInLibrary;
 
@@ -109,6 +109,11 @@
  是否允许选择原图，默认YES
  */
 @property (nonatomic, assign) BOOL allowSelectOriginal;
+
+/**
+ 是否显示原图大小，默认 NO
+ */
+@property (nonatomic, assign) BOOL showOriginalSize;
 
 /**
  编辑视频时最大裁剪时间，单位：秒，默认10s 且最小5s

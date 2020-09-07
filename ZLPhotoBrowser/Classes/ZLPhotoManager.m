@@ -180,16 +180,26 @@ static BOOL _sortAscending;
      */
     NSMutableArray<ZLAlbumListModel *> *arrAlbum = [NSMutableArray array];
     __block ZLAlbumListModel *albumUserLibrary = nil;
+    __block PHAssetCollection *recentlyAddedCollection = nil;
     for (PHFetchResult<PHAssetCollection *> *album in arrAllAlbums) {
         [album enumerateObjectsUsingBlock:^(PHAssetCollection * _Nonnull collection, NSUInteger idx, BOOL *stop) {
             // 过滤PHCollectionList对象
             if (![collection isKindOfClass:PHAssetCollection.class]) return;
+            
+            PHAssetCollectionSubtype assetCollectionSubtype = collection.assetCollectionSubtype;
+            
             // 过滤最近删除 和 已隐藏
-            if (collection.assetCollectionSubtype > 215 ||
-                collection.assetCollectionSubtype == PHAssetCollectionSubtypeSmartAlbumAllHidden) return;
+            if (assetCollectionSubtype > 215 ||
+                assetCollectionSubtype == PHAssetCollectionSubtypeSmartAlbumAllHidden) return;
             // 获取相册内asset result
             PHFetchResult<PHAsset *> *result = [PHAsset fetchAssetsInAssetCollection:collection options:option];
-            if (!result.count) return;
+            
+            if (!result.count) {
+                if (assetCollectionSubtype == PHAssetCollectionSubtypeSmartAlbumRecentlyAdded) {
+                    recentlyAddedCollection = collection;
+                }
+                 return;
+             }
             
             NSString *title = [self getCollectionTitle:collection];
             
@@ -198,12 +208,12 @@ static BOOL _sortAscending;
                                                  allowSelectVideo:allowSelectVideo
                                                  allowSelectImage:allowSelectImage];
             // 所有照片
-            if (collection.assetCollectionSubtype == PHAssetCollectionSubtypeSmartAlbumUserLibrary) {
+            if (assetCollectionSubtype == PHAssetCollectionSubtypeSmartAlbumUserLibrary) {
                 model.isCameraRoll = YES;
                 albumUserLibrary = model;
             }
             // 最近项目
-            else if (collection.assetCollectionSubtype == PHAssetCollectionSubtypeSmartAlbumRecentlyAdded) {
+            else if (assetCollectionSubtype == PHAssetCollectionSubtypeSmartAlbumRecentlyAdded) {
                 [arrAlbum insertObject:model atIndex:0];
             }
             else {
@@ -212,8 +222,20 @@ static BOOL _sortAscending;
         }];
     }
     
-    if ((arrAlbum.count == 0) && albumUserLibrary) {
-        [arrAlbum addObject:albumUserLibrary];
+    if (arrAlbum.count == 0) {
+        if (albumUserLibrary) {
+            [arrAlbum addObject:albumUserLibrary];
+        }
+        else if (recentlyAddedCollection) {
+            /** 无照片时，显示最近项目目录列表 */
+            NSString *title = [self getCollectionTitle:recentlyAddedCollection];
+            PHFetchResult<PHAsset *> *result = [PHAsset fetchAssetsInAssetCollection:recentlyAddedCollection options:option];
+            ZLAlbumListModel *model = [self getAlbumModeWithTitle:title
+                                                           result:result
+                                                 allowSelectVideo:allowSelectVideo
+                                                 allowSelectImage:allowSelectImage];
+            [arrAlbum addObject:model];
+        }
     }
     
     if (complete) { complete(arrAlbum); }
@@ -581,6 +603,8 @@ static BOOL _sortAscending;
 #pragma mark - 获取asset对应的图片
 + (PHImageRequestID)requestImageForAsset:(PHAsset *)asset size:(CGSize)size resizeMode:(PHImageRequestOptionsResizeMode)resizeMode progressHandler:(void (^ _Nullable)(double progress, NSError *error, BOOL *stop, NSDictionary *info))progressHandler completion:(void (^)(UIImage *, NSDictionary *))completion
 {
+    if (asset == nil) { completion(nil, nil); return PHInvalidImageRequestID; }
+    
     PHImageRequestOptions *option = [[PHImageRequestOptions alloc] init];
     /**
      resizeMode：对请求的图像怎样缩放。有三种选择：None，默认加载方式；Fast，尽快地提供接近或稍微大于要求的尺寸；Exact，精准提供要求的尺寸。

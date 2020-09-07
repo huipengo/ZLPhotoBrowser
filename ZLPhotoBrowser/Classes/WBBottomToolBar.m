@@ -74,7 +74,9 @@ CGFloat const WBBottomToolBarHeight = 56.0f;
     
     if (self.allowSelectOriginal) {
         [self addSubview:self.originalPhotoButton];
-        [self addSubview:self.photosBytesLabel];
+        if (self.configuration.showOriginalSize) {
+            [self addSubview:self.photosBytesLabel];
+        }
     }
     
     [self addSubview:self.doneButton];
@@ -244,6 +246,8 @@ CGFloat const WBBottomToolBarHeight = 56.0f;
 
 - (void)getOriginalImageBytes:(NSArray<ZLPhotoModel *> * _Nullable)photos {
     if (!self.nav.isSelectOriginalPhoto) { return; }
+    if (!self.configuration.showOriginalSize) { return; }
+    
     if (photos == nil) { photos = self.nav.arrSelectedModels; }
     
     @zl_weakify(self);
@@ -312,6 +316,9 @@ CGFloat const WBBottomToolBarHeight = 56.0f;
 }
 
 - (UILabel *)photosBytesLabel {
+    if (!self.allowSelectOriginal) { return nil; }
+    if (!self.configuration.showOriginalSize) { return nil; }
+    
     if (!_photosBytesLabel) {
         _photosBytesLabel = [[UILabel alloc] init];
         _photosBytesLabel.font      = [self wb_regularFontOfSize:15.0f];
