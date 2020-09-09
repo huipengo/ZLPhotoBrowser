@@ -46,7 +46,7 @@ typedef NS_ENUM(NSUInteger, ZLAssetMediaType) {
 @property (nonatomic, copy) NSString *title;
 @property (nonatomic, assign) NSInteger count;
 @property (nonatomic, assign) BOOL isCameraRoll;
-@property (nonatomic, strong) PHFetchResult *result;
+@property (nonatomic, strong) PHFetchResult<PHAsset *> *result;
 //相册第一张图asset对象
 @property (nonatomic, strong) PHAsset *headImageAsset;
 

@@ -11,21 +11,21 @@
 
 @interface ZLCustomCamera : UIViewController
 
-//是否允许拍照 默认YES
+// 是否允许拍照 默认YES
 @property (nonatomic, assign) BOOL allowTakePhoto;
-//是否允许录制视频 默认YES
+// 是否允许录制视频 默认YES
 @property (nonatomic, assign) BOOL allowRecordVideo;
 
-//最大录制时长 默认15s
+// 最大录制时长 默认15s
 @property (nonatomic, assign) NSInteger maxRecordDuration;
 
-//视频分辨率 默认 ZLCaptureSessionPreset1280x720
+// 视频分辨率 默认 ZLCaptureSessionPreset960x540
 @property (nonatomic, assign) ZLCaptureSessionPreset sessionPreset;
 
-//视频格式 默认 ZLExportVideoTypeMp4
+// 视频格式 默认 ZLExportVideoTypeMp4
 @property (nonatomic, assign) ZLExportVideoType videoType;
 
-//录制视频时候进度条颜色 默认 rgb(80, 169, 56)
+// 录制视频时候进度条颜色 默认 rgb(80, 169, 56)
 @property (nonatomic, strong) UIColor *circleProgressColor;
 
 /**

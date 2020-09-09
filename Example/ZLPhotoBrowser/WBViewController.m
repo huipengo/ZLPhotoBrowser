@@ -165,7 +165,6 @@
         self.lastSelectAssets = assets.mutableCopy;
         self.lastSelectPhotos = images.mutableCopy;
         [self.collectionView reloadData];
-        NSLog(@"image:%@", images);
         //解析图片
         if (self.allowAnialysisAssetSwitch.isOn) {
             [self anialysisAssets:assets original:isOriginal];
@@ -198,7 +197,6 @@
         self.arrDataSources = images;
         self.lastSelectPhotos = images.mutableCopy;
         [self.collectionView reloadData];
-        NSLog(@"%@", images);
     }];
 }
 
@@ -226,8 +224,7 @@
 }
 
 // 拍照
-- (IBAction)showCamera:(id)sender
-{
+- (IBAction)showCamera:(id)sender {
     ZLCustomCamera *camera = [[ZLCustomCamera alloc] init];
 
     @zl_weakify(self);

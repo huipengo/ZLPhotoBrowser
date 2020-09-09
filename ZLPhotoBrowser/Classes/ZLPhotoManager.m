@@ -179,7 +179,6 @@ static BOOL _sortAscending;
      PHAssetCollectionSubtypeAny = NSIntegerMax /////所有类型
      */
     NSMutableArray<ZLAlbumListModel *> *arrAlbum = [NSMutableArray array];
-    __block ZLAlbumListModel *albumUserLibrary = nil;
     __block PHAssetCollection *recentlyAddedCollection = nil;
     for (PHFetchResult<PHAssetCollection *> *album in arrAllAlbums) {
         [album enumerateObjectsUsingBlock:^(PHAssetCollection * _Nonnull collection, NSUInteger idx, BOOL *stop) {
@@ -207,13 +206,9 @@ static BOOL _sortAscending;
                                                            result:result
                                                  allowSelectVideo:allowSelectVideo
                                                  allowSelectImage:allowSelectImage];
-            // 所有照片
+            // 所有照片(相机胶卷)
             if (assetCollectionSubtype == PHAssetCollectionSubtypeSmartAlbumUserLibrary) {
                 model.isCameraRoll = YES;
-                albumUserLibrary = model;
-            }
-            // 最近项目
-            else if (assetCollectionSubtype == PHAssetCollectionSubtypeSmartAlbumRecentlyAdded) {
                 [arrAlbum insertObject:model atIndex:0];
             }
             else {
@@ -223,10 +218,7 @@ static BOOL _sortAscending;
     }
     
     if (arrAlbum.count == 0) {
-        if (albumUserLibrary) {
-            [arrAlbum addObject:albumUserLibrary];
-        }
-        else if (recentlyAddedCollection) {
+        if (recentlyAddedCollection) {
             /** 无照片时，显示最近项目目录列表 */
             NSString *title = [self getCollectionTitle:recentlyAddedCollection];
             PHFetchResult<PHAsset *> *result = [PHAsset fetchAssetsInAssetCollection:recentlyAddedCollection options:option];
@@ -254,11 +246,7 @@ static BOOL _sortAscending;
     NSString *title = nil;
     
     if (type == ZLLanguageSystem) {
-        if (collection.assetCollectionSubtype == PHAssetCollectionSubtypeSmartAlbumRecentlyAdded) {
-            title = GetLocalLanguageTextValue(ZLPhotoBrowserRecentlyAdded);
-        } else {
-            title = collection.localizedTitle;
-        }
+        title = collection.localizedTitle;
     }
     else {
         switch (collection.assetCollectionSubtype) {

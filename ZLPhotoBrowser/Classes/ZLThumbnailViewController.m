@@ -107,7 +107,7 @@ typedef NS_ENUM(NSUInteger, SlideSelectType) {
     }
     
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-        if (self.albumListModel) {
+        if (self.albumListModel.result.count > 0) {
             self.albumListModel.models = [self _photoModels];
         }
         dispatch_async(dispatch_get_main_queue(), ^{
@@ -136,7 +136,7 @@ typedef NS_ENUM(NSUInteger, SlideSelectType) {
 }
 
 - (void)_loadDataFinished {
-    if (self.albumListModel) {
+    if (self.albumListModel.models.count > 0) {
         ZLImageNavigationController *nav = (ZLImageNavigationController *)self.navigationController;
         [ZLPhotoManager markSelectModelInArr:self.albumListModel.models selArr:nav.arrSelectedModels];
     }
@@ -272,7 +272,7 @@ typedef NS_ENUM(NSUInteger, SlideSelectType) {
         return;
     }
     if (self.arrDataSources.count > 0) {
-        NSInteger index = self.arrDataSources.count-1;
+        NSInteger index = self.arrDataSources.count - 1;
         if (self.allowTakePhoto) {
             index += 1;
         }
@@ -1152,7 +1152,9 @@ typedef NS_ENUM(NSUInteger, SlideSelectType) {
 }
 
 - (void)menuView:(WBDropMenuView *)menuView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
-    self.albumListModel = [self.menuItems objectAtIndex:indexPath.row];
+    if (self.menuItems.count > indexPath.row) {
+        self.albumListModel = [self.menuItems objectAtIndex:indexPath.row];
+    }
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
         self.albumListModel.models = [self _photoModels];
         dispatch_async(dispatch_get_main_queue(), ^{
@@ -1172,8 +1174,7 @@ typedef NS_ENUM(NSUInteger, SlideSelectType) {
 }
 
 #pragma mark -- getter
-- (NSMutableArray<ZLPhotoModel *> *)arrDataSources
-{
+- (NSMutableArray<ZLPhotoModel *> *)arrDataSources {
     if (!_arrDataSources) {
         _arrDataSources = [NSMutableArray array];
     }

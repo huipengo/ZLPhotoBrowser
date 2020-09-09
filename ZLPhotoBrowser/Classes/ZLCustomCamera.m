@@ -454,15 +454,13 @@
 
 @implementation ZLCustomCamera
 
-- (void)dealloc
-{
+- (void)dealloc {
     if ([_session isRunning]) {
         [_session stopRunning];
     }
     
     [[AVAudioSession sharedInstance] setActive:NO withOptions:AVAudioSessionSetActiveOptionNotifyOthersOnDeactivation error:nil];
     [[NSNotificationCenter defaultCenter] removeObserver:self];
-//    NSLog(@"---- %s", __FUNCTION__);
 }
 
 - (instancetype)init
@@ -473,7 +471,7 @@
         self.allowTakePhoto = YES;
         self.allowRecordVideo = YES;
         self.maxRecordDuration = 15;
-        self.sessionPreset = ZLCaptureSessionPreset1280x720;
+        self.sessionPreset = ZLCaptureSessionPreset960x540;
         self.videoType = ZLExportVideoTypeMp4;
         self.circleProgressColor = kRGB(80, 169, 56);
     }
@@ -629,24 +627,8 @@
 {
     self.view.backgroundColor = [UIColor blackColor];
     
-    self.toolView = [[CameraToolView alloc] init];
-    self.toolView.delegate = self;
-    self.toolView.allowTakePhoto = self.allowTakePhoto;
-    self.toolView.allowRecordVideo = self.allowRecordVideo;
-    self.toolView.circleProgressColor = self.circleProgressColor;
-    self.toolView.maxRecordDuration = self.maxRecordDuration;
     [self.view addSubview:self.toolView];
-    
-    self.focusCursorImageView = [[UIImageView alloc] initWithImage:GetImageWithName(@"zl_focus")];
-    self.focusCursorImageView.contentMode = UIViewContentModeScaleAspectFit;
-    self.focusCursorImageView.clipsToBounds = YES;
-    self.focusCursorImageView.frame = CGRectMake(0, 0, 70, 70);
-    self.focusCursorImageView.alpha = 0;
     [self.view addSubview:self.focusCursorImageView];
-    
-    self.toggleCameraBtn = [UIButton buttonWithType:UIButtonTypeCustom];
-    [self.toggleCameraBtn setImage:GetImageWithName(@"zl_toggle_camera") forState:UIControlStateNormal];
-    [self.toggleCameraBtn addTarget:self action:@selector(btnToggleCameraAction) forControlEvents:UIControlEventTouchUpInside];
     [self.view addSubview:self.toggleCameraBtn];
     
     UITapGestureRecognizer *tap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(adjustFocusPoint:)];
@@ -660,8 +642,7 @@
     }
 }
 
-- (void)setupCamera
-{
+- (void)setupCamera {
     self.session = [[AVCaptureSession alloc] init];
     
     //相机画面输入流
@@ -716,8 +697,7 @@
     [self.view.layer insertSublayer:self.previewLayer atIndex:0];
 }
 
-- (NSString *)transformSessionPreset
-{
+- (NSString *)transformSessionPreset {
     switch (self.sessionPreset) {
         case ZLCaptureSessionPreset325x288:
             return AVCaptureSessionPreset352x288;
@@ -745,8 +725,7 @@
 }
 
 #pragma mark - 设置聚焦点
-- (void)adjustFocusPoint:(UITapGestureRecognizer *)tap
-{
+- (void)adjustFocusPoint:(UITapGestureRecognizer *)tap {
     if (!self.session.isRunning) return;
     
     CGPoint point = [tap locationInView:self.view];
@@ -759,8 +738,7 @@
 }
 
 //设置聚焦光标位置
-- (void)setFocusCursorWithPoint:(CGPoint)point
-{
+- (void)setFocusCursorWithPoint:(CGPoint)point {
     self.focusCursorImageView.center = point;
     self.focusCursorImageView.alpha = 1;
     self.focusCursorImageView.transform = CGAffineTransformMakeScale(1.2, 1.2);
@@ -775,9 +753,8 @@
     [self focusWithMode:AVCaptureFocusModeAutoFocus exposureMode:AVCaptureExposureModeAutoExpose atPoint:cameraPoint];
 }
 
-//设置聚焦点
-- (void)focusWithMode:(AVCaptureFocusMode)focusMode exposureMode:(AVCaptureExposureMode)exposureMode atPoint:(CGPoint)point
-{
+// 设置聚焦点
+- (void)focusWithMode:(AVCaptureFocusMode)focusMode exposureMode:(AVCaptureExposureMode)exposureMode atPoint:(CGPoint)point {
     AVCaptureDevice * captureDevice = [self.videoInput device];
     NSError * error;
     //注意改变设备属性前一定要首先调用lockForConfiguration:调用完之后使用unlockForConfiguration方法解锁
@@ -804,8 +781,7 @@
 }
 
 #pragma mark - 手势调整焦距
-- (void)adjustCameraFocus:(UIPanGestureRecognizer *)pan
-{
+- (void)adjustCameraFocus:(UIPanGestureRecognizer *)pan {
     CGRect caremaViewRect = [self.toolView convertRect:self.toolView.bottomView.frame toView:self.view];
     CGPoint point = [pan locationInView:self.view];
     
@@ -831,8 +807,7 @@
     }
 }
 
-- (void)setVideoZoomFactor:(CGFloat)zoomFactor
-{
+- (void)setVideoZoomFactor:(CGFloat)zoomFactor {
     AVCaptureDevice * captureDevice = [self.videoInput device];
     NSError *error = nil;
     [captureDevice lockForConfiguration:&error];
@@ -842,15 +817,13 @@
 }
 
 #pragma mark - gesture delegate
-- (BOOL)gestureRecognizer:(UIGestureRecognizer *)gestureRecognizer shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherGestureRecognizer
-{
+- (BOOL)gestureRecognizer:(UIGestureRecognizer *)gestureRecognizer shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherGestureRecognizer {
     return YES;
 }
 
 #pragma mark - 切换前后相机
 //切换摄像头
-- (void)btnToggleCameraAction
-{
+- (void)btnToggleCameraAction {
     NSUInteger cameraCount = [AVCaptureDevice devicesWithMediaType:AVMediaTypeVideo].count;
     if (cameraCount > 1) {
         NSError *error;
@@ -943,16 +916,14 @@
     }
 }
 
-//结束录制
-- (void)onFinishRecord
-{
+// 结束录制
+- (void)onFinishRecord {
     [self.movieFileOutPut stopRecording];
     [self setVideoZoomFactor:1];
 }
 
-//重新拍照或录制
-- (void)onRetake
-{
+// 重新拍照或录制
+- (void)onRetake {
     [self.session startRunning];
     [self setFocusCursorWithPoint:self.view.center];
     if (self.takedImage != nil) {
@@ -967,7 +938,7 @@
     [self deleteVideo];
 }
 
-//确定选择
+// 确定选择
 - (void)onOkClick
 {
     [self.playerView reset];
@@ -978,9 +949,8 @@
     }];
 }
 
-//dismiss
-- (void)onDismiss
-{
+// dismiss
+- (void)onDismiss {
     if ([self.session isRunning]) {
         [self.session stopRunning];
     }
@@ -989,8 +959,7 @@
     });
 }
 
-- (void)playVideo
-{
+- (void)playVideo {
     if (!_playerView) {
         self.playerView = [[ZLPlayer alloc] initWithFrame:self.view.bounds];
         [self.view insertSubview:self.playerView belowSubview:self.toolView];
@@ -1000,8 +969,7 @@
     [self.playerView play];
 }
 
-- (void)deleteVideo
-{
+- (void)deleteVideo {
     if (self.videoUrl) {
         [self.playerView reset];
         [UIView animateWithDuration:0.25 animations:^{
@@ -1037,9 +1005,37 @@
     });
 }
 
-- (void)didReceiveMemoryWarning {
-    [super didReceiveMemoryWarning];
-    // Dispose of any resources that can be recreated.
+#pragma mark --
+- (CameraToolView *)toolView {
+    if (!_toolView) {
+        _toolView = [[CameraToolView alloc] init];
+        _toolView.delegate = self;
+        _toolView.allowTakePhoto = self.allowTakePhoto;
+        _toolView.allowRecordVideo = self.allowRecordVideo;
+        _toolView.circleProgressColor = self.circleProgressColor;
+        _toolView.maxRecordDuration = self.maxRecordDuration;
+    }
+    return _toolView;
+}
+
+- (UIImageView *)focusCursorImageView {
+    if (!_focusCursorImageView) {
+        _focusCursorImageView = [[UIImageView alloc] initWithImage:GetImageWithName(@"zl_focus")];
+        _focusCursorImageView.contentMode = UIViewContentModeScaleAspectFit;
+        _focusCursorImageView.clipsToBounds = YES;
+        _focusCursorImageView.frame = CGRectMake(0.0f, 0.0f, 70.0f, 70.0f);
+        _focusCursorImageView.alpha = 0.0f;
+    }
+    return _focusCursorImageView;
+}
+
+- (UIButton *)toggleCameraBtn {
+    if (!_toggleCameraBtn) {
+        _toggleCameraBtn = [UIButton buttonWithType:UIButtonTypeCustom];
+        [_toggleCameraBtn setImage:GetImageWithName(@"zl_toggle_camera") forState:UIControlStateNormal];
+        [_toggleCameraBtn addTarget:self action:@selector(btnToggleCameraAction) forControlEvents:UIControlEventTouchUpInside];
+    }
+    return _toggleCameraBtn;
 }
 
 @end
