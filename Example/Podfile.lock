@@ -2,7 +2,7 @@ PODS:
   - SDWebImage (5.8.4):
     - SDWebImage/Core (= 5.8.4)
   - SDWebImage/Core (5.8.4)
-  - WB_ZLPhotoBrowser (1.0.0):
+  - WB_ZLPhotoBrowser (3.2.2):
     - SDWebImage
 
 DEPENDENCIES:
@@ -18,8 +18,8 @@ EXTERNAL SOURCES:
 
 SPEC CHECKSUMS:
   SDWebImage: cf6922231e95550934da2ada0f20f2becf2ceba9
-  WB_ZLPhotoBrowser: f3f75eca05c202cfbb5cc176d243c577e27ce61e
+  WB_ZLPhotoBrowser: e32744a01cc130c6aaf2586713837bc04153f41e
 
-PODFILE CHECKSUM: 2ba4e130a0137f9591ed61fa643e8a98d7f2e3ba
+PODFILE CHECKSUM: f47cecb46ab000f52852a4ffed138802638d9f9b
 
-COCOAPODS: 1.9.3
+COCOAPODS: 1.10.0

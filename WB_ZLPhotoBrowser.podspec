@@ -1,6 +1,6 @@
 Pod::Spec.new do |s|
   s.name         = 'WB_ZLPhotoBrowser'
-  s.version      = '3.2.1'
+  s.version      = '3.2.2'
   s.summary      = '原项目地址：https://github.com/longitachi/ZLPhotoBrowser.git. 本库为项目所需个人定制版本. Forked from v3.2.0.'
   
   s.description      = <<-DESC
@@ -25,3 +25,7 @@ Pod::Spec.new do |s|
 
   s.dependency 'SDWebImage'
 end
+
+
+# pod lib lint WB_ZLPhotoBrowser.podspec --allow-warnings --verbose --no-clean
+# pod trunk push WB_ZLPhotoBrowser.podspec --allow-warnings --verbose --no-clean
