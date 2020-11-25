@@ -13,7 +13,7 @@ Pod::Spec.new do |s|
   s.platform     = :ios
   s.author       = {'huipeng' => 'penghui_only@163.com'}
 
-  s.ios.deployment_target = '8.0'
+  s.ios.deployment_target = '9.0'
 
   s.source       = {:git => 'https://github.com/huipengo/ZLPhotoBrowser.git', :tag => s.version.to_s}
 
@@ -27,5 +27,5 @@ Pod::Spec.new do |s|
 end
 
 
-# pod lib lint WB_ZLPhotoBrowser.podspec --allow-warnings --verbose --no-clean
-# pod trunk push WB_ZLPhotoBrowser.podspec --allow-warnings --verbose --no-clean
+# pod lib lint WB_ZLPhotoBrowser.podspec --allow-warnings --use-libraries --verbose
+# pod trunk push WB_ZLPhotoBrowser.podspec --allow-warnings --use-libraries --verbose
