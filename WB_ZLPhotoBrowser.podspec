@@ -1,6 +1,6 @@
 Pod::Spec.new do |s|
   s.name         = 'WB_ZLPhotoBrowser'
-  s.version      = '3.2.2'
+  s.version      = '3.2.3'
   s.summary      = '原项目地址：https://github.com/longitachi/ZLPhotoBrowser.git. 本库为项目所需个人定制版本. Forked from v3.2.0.'
   
   s.description      = <<-DESC

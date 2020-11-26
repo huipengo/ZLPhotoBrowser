@@ -109,13 +109,16 @@ static BOOL _sortAscending;
     PHFetchResult *smartAlbums = [PHAssetCollection fetchAssetCollectionsWithType:PHAssetCollectionTypeSmartAlbum subtype:PHAssetCollectionSubtypeAlbumRegular options:nil];
     
     __block ZLAlbumListModel *m;
+    dispatch_semaphore_t _lockSemaphore = dispatch_semaphore_create(1);
     [smartAlbums enumerateObjectsUsingBlock:^(PHAssetCollection *  _Nonnull collection, NSUInteger idx, BOOL * _Nonnull stop) {
-        //获取相册内asset result
+        dispatch_semaphore_wait(_lockSemaphore, DISPATCH_TIME_FOREVER);
+        // 获取相册内asset result
         if (collection.assetCollectionSubtype == 209) {
             PHFetchResult<PHAsset *> *result = [PHAsset fetchAssetsInAssetCollection:collection options:option];
             m = [self getAlbumModeWithTitle:[self getCollectionTitle:collection] result:result allowSelectVideo:allowSelectVideo allowSelectImage:allowSelectImage];
             m.isCameraRoll = YES;
         }
+        dispatch_semaphore_signal(_lockSemaphore);
     }];
     return m;
 }
@@ -180,6 +183,7 @@ static BOOL _sortAscending;
      */
     NSMutableArray<ZLAlbumListModel *> *arrAlbum = [NSMutableArray array];
     __block PHAssetCollection *recentlyAddedCollection = nil;
+    dispatch_semaphore_t _lockSemaphore = dispatch_semaphore_create(1);
     for (PHFetchResult<PHAssetCollection *> *album in arrAllAlbums) {
         [album enumerateObjectsUsingBlock:^(PHAssetCollection * _Nonnull collection, NSUInteger idx, BOOL *stop) {
             // 过滤PHCollectionList对象
@@ -190,6 +194,8 @@ static BOOL _sortAscending;
             // 过滤最近删除 和 已隐藏
             if (assetCollectionSubtype > 215 ||
                 assetCollectionSubtype == PHAssetCollectionSubtypeSmartAlbumAllHidden) return;
+
+            dispatch_semaphore_wait(_lockSemaphore, DISPATCH_TIME_FOREVER);
             // 获取相册内asset result
             PHFetchResult<PHAsset *> *result = [PHAsset fetchAssetsInAssetCollection:collection options:option];
             
@@ -197,6 +203,7 @@ static BOOL _sortAscending;
                 if (assetCollectionSubtype == PHAssetCollectionSubtypeSmartAlbumRecentlyAdded) {
                     recentlyAddedCollection = collection;
                 }
+                dispatch_semaphore_signal(_lockSemaphore);
                  return;
              }
             
@@ -214,11 +221,13 @@ static BOOL _sortAscending;
             else {
                 [arrAlbum addObject:model];
             }
+            dispatch_semaphore_signal(_lockSemaphore);
         }];
     }
     
     if (arrAlbum.count == 0) {
         if (recentlyAddedCollection) {
+            dispatch_semaphore_wait(_lockSemaphore, DISPATCH_TIME_FOREVER);
             /** 无照片时，显示最近项目目录列表 */
             NSString *title = [self getCollectionTitle:recentlyAddedCollection];
             PHFetchResult<PHAsset *> *result = [PHAsset fetchAssetsInAssetCollection:recentlyAddedCollection options:option];
@@ -227,6 +236,7 @@ static BOOL _sortAscending;
                                                  allowSelectVideo:allowSelectVideo
                                                  allowSelectImage:allowSelectImage];
             [arrAlbum addObject:model];
+            dispatch_semaphore_signal(_lockSemaphore);
         }
     }
     
