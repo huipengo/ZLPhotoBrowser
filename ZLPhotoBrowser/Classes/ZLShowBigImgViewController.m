@@ -219,7 +219,7 @@
     [self.view addSubview:_navView];
     
     _btnBack = [UIButton buttonWithType:UIButtonTypeCustom];
-    [_btnBack setImage:GetImageWithName(@"zl_navBack") forState:UIControlStateNormal];
+    [_btnBack setImage:configuration.nav_back_image forState:UIControlStateNormal];
     [_btnBack setImageEdgeInsets:UIEdgeInsetsMake(0, -10, 0, 0)];
     [_btnBack addTarget:self action:@selector(btnBack_Click) forControlEvents:UIControlEventTouchUpInside];
     [_navView addSubview:_btnBack];
@@ -238,8 +238,8 @@
     //right nav btn
     _navRightBtn = [UIButton buttonWithType:UIButtonTypeCustom];
     _navRightBtn.frame = CGRectMake(0, 0, 25, 25);
-    UIImage *normalImg = GetImageWithName(@"zl_btn_unselected");
-    UIImage *selImg = GetImageWithName(@"zl_btn_selected");
+    UIImage *normalImg = configuration.btn_unselected_image;
+    UIImage *selImg    = configuration.btn_selected_image;
     [_navRightBtn setBackgroundImage:normalImg forState:UIControlStateNormal];
     [_navRightBtn setBackgroundImage:selImg forState:UIControlStateSelected];
     [_navRightBtn addTarget:self action:@selector(navRightBtn_Click:) forControlEvents:UIControlEventTouchUpInside];

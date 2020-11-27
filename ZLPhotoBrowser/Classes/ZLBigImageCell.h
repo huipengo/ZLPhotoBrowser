@@ -85,6 +85,7 @@
 @property (nonatomic, assign) PHImageRequestID imageRequestID;
 @property (nonatomic, strong) UITapGestureRecognizer *singleTap;
 @property (nonatomic, copy)   void (^singleTapCallBack)(void);
+@property (nonatomic, strong) UIImage *playVideoImage;
 
 - (void)placeSubviews;
 - (void)controllerScrollViewDidScroll;

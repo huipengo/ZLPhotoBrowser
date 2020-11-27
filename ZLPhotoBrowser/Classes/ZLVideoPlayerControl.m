@@ -8,6 +8,7 @@
 
 #import "ZLVideoPlayerControl.h"
 #import "ZLDefine.h"
+#import "ZLPhotoConfiguration.h"
 
 @interface ZLVideoPlayerControl ()
 
@@ -36,9 +37,11 @@
 
 - (void)setupUI
 {
+    ZLPhotoConfiguration *configuration = ZLPhotoConfiguration.sharedConfiguration;
+    
     self.playBtn = [UIButton buttonWithType:UIButtonTypeCustom];
-    [self.playBtn setImage:GetImageWithName(@"zl_playButtonWhite") forState:UIControlStateNormal];
-    [self.playBtn setImage:GetImageWithName(@"zl_pauseButtonWhite") forState:UIControlStateSelected];
+    [self.playBtn setImage:configuration.play_button_white_image forState:UIControlStateNormal];
+    [self.playBtn setImage:configuration.pause_button_white_image forState:UIControlStateSelected];
     [self.playBtn addTarget:self action:@selector(playAction) forControlEvents:UIControlEventTouchUpInside];
     [self addSubview:self.playBtn];
     

@@ -300,9 +300,10 @@ CGFloat const WBBottomToolBarHeight = 56.0f;
     if (!_originalPhotoButton) {
         _originalPhotoButton = [UIButton buttonWithType:UIButtonTypeCustom];
         _originalPhotoButton.titleLabel.font = [self wb_regularFontOfSize:15.0f];
-        UIImage *image_normal   = GetImageWithName(@"zl_btn_original_circle");
-        UIImage *image_selected = GetImageWithName(@"zl_btn_original_selected");
-        UIImage *image_disabled = GetImageWithName(@"zl_btn_original_circle_disabled");
+        ZLPhotoConfiguration *configuration = self.configuration;
+        UIImage *image_normal   = configuration.btn_original_circle_image;
+        UIImage *image_selected = configuration.btn_original_selected_image;
+        UIImage *image_disabled = configuration.btn_original_circle_disabled_image;
         [_originalPhotoButton setImage:image_normal   forState:UIControlStateNormal];
         [_originalPhotoButton setImage:image_selected forState:UIControlStateSelected];
         [_originalPhotoButton setImage:image_disabled forState:UIControlStateDisabled];

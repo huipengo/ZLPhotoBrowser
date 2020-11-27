@@ -96,14 +96,16 @@ static CGFloat const kItemWidth  = kItemHeight * 2/3;
     self.layer.borderWidth = 2;
     self.layer.borderColor = [UIColor clearColor].CGColor;
     
-    _leftView = [[UIImageView alloc] initWithImage:GetImageWithName(@"zl_ic_left")];
+    ZLPhotoConfiguration *configuration = ZLPhotoConfiguration.sharedConfiguration;
+    
+    _leftView = [[UIImageView alloc] initWithImage:configuration.ic_left_image];
     _leftView.userInteractionEnabled = YES;
     _leftView.tag = 0;
     UIPanGestureRecognizer *lg = [[UIPanGestureRecognizer alloc] initWithTarget:self action:@selector(panAction:)];
     [_leftView addGestureRecognizer:lg];
     [self addSubview:_leftView];
     
-    _rightView = [[UIImageView alloc] initWithImage:GetImageWithName(@"zl_ic_right")];
+    _rightView = [[UIImageView alloc] initWithImage:configuration.ic_right_image];
     _rightView.userInteractionEnabled = YES;
     _rightView.tag = 1;
     UIPanGestureRecognizer *rg = [[UIPanGestureRecognizer alloc] initWithTarget:self action:@selector(panAction:)];
@@ -400,7 +402,7 @@ static CGFloat const kItemWidth  = kItemHeight * 2/3;
 
 - (void)creatBottomView
 {
-    ZLPhotoConfiguration *configuration = [(ZLImageNavigationController *)self.navigationController configuration] ?: ZLPhotoConfiguration.defaultPhotoConfiguration;
+    ZLPhotoConfiguration *configuration = [(ZLImageNavigationController *)self.navigationController configuration] ?: ZLPhotoConfiguration.sharedConfiguration;
     //下方视图
     _bottomView = [[UIView alloc] init];
     _bottomView.backgroundColor = [[UIColor blackColor] colorWithAlphaComponent:.7];

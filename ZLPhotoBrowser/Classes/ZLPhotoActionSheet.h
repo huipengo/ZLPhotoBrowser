@@ -19,7 +19,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (nonatomic, weak) UIViewController *sender;
 
-/**相册框架配置，默认为 [ZLPhotoConfiguration defaultPhotoConfiguration]*/
+/**相册框架配置，默认为 [ZLPhotoConfiguration sharedConfiguration]*/
 @property (nonatomic, strong, readonly) ZLPhotoConfiguration *configuration;
 
 /**

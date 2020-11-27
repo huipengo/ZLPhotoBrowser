@@ -13,6 +13,7 @@
 #import "ToastUtils.h"
 #import "UIControl+EnlargeTouchArea.h"
 #import "ZLProgressView.h"
+#import "ZLPhotoConfiguration.h"
 
 static CGFloat const wb_selected_btn_width = 24.0f;
 
@@ -52,14 +53,16 @@ static CGFloat const wb_selected_btn_width = 24.0f;
     self.maskView.hidden = YES;
     [self.contentView addSubview:self.maskView];
     
-    self.videoBottomView = [[UIImageView alloc] initWithImage:GetImageWithName(@"zl_videoView")];
+    ZLPhotoConfiguration *configuration = ZLPhotoConfiguration.sharedConfiguration;
+    
+    self.videoBottomView = [[UIImageView alloc] initWithImage:configuration.video_view_image];
     self.videoBottomView.frame = CGRectMake(0, GetViewHeight(self)-15, GetViewWidth(self), 15);
     [self.contentView addSubview:_videoBottomView];
     
     self.btnSelect = [UIButton buttonWithType:UIButtonTypeCustom];
     self.btnSelect.frame = CGRectMake(GetViewWidth(self.contentView) - wb_selected_btn_width - 7.5f, 7.5f, wb_selected_btn_width, wb_selected_btn_width);
-    [self.btnSelect setBackgroundImage:GetImageWithName(@"zl_btn_unselected") forState:UIControlStateNormal];
-    [self.btnSelect setBackgroundImage:GetImageWithName(@"zl_btn_selected") forState:UIControlStateSelected];
+    [self.btnSelect setBackgroundImage:configuration.btn_unselected_image forState:UIControlStateNormal];
+    [self.btnSelect setBackgroundImage:configuration.btn_selected_image forState:UIControlStateSelected];
     [self.btnSelect addTarget:self action:@selector(btnSelectClick:) forControlEvents:UIControlEventTouchUpInside];
     [self.contentView addSubview:self.btnSelect];
     
@@ -75,11 +78,11 @@ static CGFloat const wb_selected_btn_width = 24.0f;
     [self.contentView addSubview:self.indexLabel];
     
     self.videoImageView = [[UIImageView alloc] initWithFrame:CGRectMake(5, 1, 16, 12)];
-    self.videoImageView.image = GetImageWithName(@"zl_video");
+    self.videoImageView.image = configuration.video_image;
     [self.videoBottomView addSubview:self.videoImageView];
     
     self.liveImageView = [[UIImageView alloc] initWithFrame:CGRectMake(5, -1, 15, 15)];
-    self.liveImageView.image = GetImageWithName(@"zl_livePhoto");
+    self.liveImageView.image = configuration.live_photo_image;
     [self.videoBottomView addSubview:self.liveImageView];
     
     self.timeLabel = [[UILabel alloc] initWithFrame:CGRectMake(30, 1, GetViewWidth(self)-35, 12)];
@@ -275,7 +278,8 @@ static CGFloat const wb_selected_btn_width = 24.0f;
 {
     self = [super initWithFrame:frame];
     if (self) {
-        self.imageView = [[UIImageView alloc] initWithImage:GetImageWithName(@"zl_takePhoto")];
+        ZLPhotoConfiguration *configuration = ZLPhotoConfiguration.sharedConfiguration;
+        self.imageView = [[UIImageView alloc] initWithImage:configuration.take_photo_image];
         self.imageView.contentMode = UIViewContentModeScaleAspectFit;
         CGFloat width = GetViewHeight(self)/3;
         self.imageView.frame = CGRectMake(0, 0, width, width);

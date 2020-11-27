@@ -16,6 +16,7 @@
 #import "ToastUtils.h"
 #import "ZLProgressView.h"
 #import "ZLVideoPlayerControl.h"
+#import "ZLPhotoConfiguration.h"
 
 @interface ZLBigImageCell ()
 
@@ -294,6 +295,14 @@
 //        _imageView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
     }
     return _imageView;
+}
+
+- (UIImage *)playVideoImage {
+    if (!_playVideoImage) {
+        ZLPhotoConfiguration *configuration = ZLPhotoConfiguration.sharedConfiguration;
+        _playVideoImage = configuration.play_video_image;
+    }
+    return _playVideoImage;
 }
 
 - (instancetype)initWithFrame:(CGRect)frame
@@ -796,7 +805,7 @@
 {
     if (!_playBtn) {
         _playBtn = [UIButton buttonWithType:UIButtonTypeCustom];
-        [_playBtn setImage:GetImageWithName(@"zl_playVideo") forState:UIControlStateNormal];
+        [_playBtn setImage:self.playVideoImage forState:UIControlStateNormal];
         _playBtn.frame = CGRectMake(0, 64, GetViewWidth(self), GetViewHeight(self) - 64 - 44);
         [_playBtn addTarget:self action:@selector(playBtnClick) forControlEvents:UIControlEventTouchUpInside];
     }
@@ -810,7 +819,8 @@
         NSMutableAttributedString *str = [[NSMutableAttributedString alloc] init];
         //创建图片附件
         NSTextAttachment *attach = [[NSTextAttachment alloc]init];
-        attach.image = GetImageWithName(@"zl_videoLoadFailed");
+        ZLPhotoConfiguration *configuration = ZLPhotoConfiguration.sharedConfiguration;
+        attach.image = configuration.video_load_failed_image;
         attach.bounds = CGRectMake(0, -10, 30, 30);
         //创建属性字符串 通过图片附件
         NSAttributedString *attrStr = [NSAttributedString attributedStringWithAttachment:attach];
@@ -929,7 +939,7 @@
     
     if (player.rate != .0) {
         [player pause];
-        [self.playBtn setImage:GetImageWithName(@"zl_playVideo") forState:UIControlStateNormal];
+        [self.playBtn setImage:self.playVideoImage forState:UIControlStateNormal];
     }
 }
 
@@ -951,7 +961,7 @@
         }
         [player play];
     } else {
-        [self.playBtn setImage:GetImageWithName(@"zl_playVideo") forState:UIControlStateNormal];
+        [self.playBtn setImage:self.playVideoImage forState:UIControlStateNormal];
         [player pause];
     }
 }
@@ -959,7 +969,7 @@
 - (void)playFinished:(AVPlayerItem *)item
 {
     [super singleTapAction];
-    [self.playBtn setImage:GetImageWithName(@"zl_playVideo") forState:UIControlStateNormal];
+    [self.playBtn setImage:self.playVideoImage forState:UIControlStateNormal];
     self.imageView.hidden = NO;
     [self.playLayer.player seekToTime:kCMTimeZero];
 }
@@ -1000,7 +1010,7 @@
     if (_playLayer.player && _playLayer.player.rate != 0) {
         [self playBtnClick];
     } else if (self.playControl.isHidden == NO) {
-        [self.playBtn setImage:GetImageWithName(@"zl_playVideo") forState:UIControlStateNormal];
+        [self.playBtn setImage:self.playVideoImage forState:UIControlStateNormal];
         [self changePlayControlPlayStatus:NO];
         [super singleTapAction];
     }
@@ -1019,7 +1029,7 @@
 {
     if (!_playBtn) {
         _playBtn = [UIButton buttonWithType:UIButtonTypeCustom];
-        [_playBtn setImage:GetImageWithName(@"zl_playVideo") forState:UIControlStateNormal];
+        [_playBtn setImage:self.playVideoImage forState:UIControlStateNormal];
         _playBtn.frame = CGRectMake(0, 64, GetViewWidth(self), GetViewHeight(self) - 64 - 44);
         [_playBtn addTarget:self action:@selector(playBtnClick) forControlEvents:UIControlEventTouchUpInside];
     }
@@ -1154,7 +1164,7 @@
         [player play];
         [self changePlayControlPlayStatus:YES];
     } else {
-        [self.playBtn setImage:GetImageWithName(@"zl_playVideo") forState:UIControlStateNormal];
+        [self.playBtn setImage:self.playVideoImage forState:UIControlStateNormal];
 //        [self.indicator stopAnimating];
         [player pause];
         [self changePlayControlPlayStatus:NO];
@@ -1164,7 +1174,7 @@
 - (void)playFinished:(AVPlayerItem *)item
 {
     [super singleTapAction];
-    [self.playBtn setImage:GetImageWithName(@"zl_playVideo") forState:UIControlStateNormal];
+    [self.playBtn setImage:self.playVideoImage forState:UIControlStateNormal];
 //    [self.indicator stopAnimating];
     [self.playLayer.player seekToTime:kCMTimeZero];
     [self changePlayControlPlayStatus:NO];

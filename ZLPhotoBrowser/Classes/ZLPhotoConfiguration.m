@@ -19,9 +19,18 @@
 //    NSLog(@"---- %s", __FUNCTION__);
 }
 
++ (nonnull instancetype)sharedConfiguration {
+    static id _sharedInstance = nil;
+    static dispatch_once_t oncePredicate;
+    dispatch_once(&oncePredicate, ^{
+        _sharedInstance = [ZLPhotoConfiguration defaultPhotoConfiguration];
+    });
+    return _sharedInstance;
+}
+
 + (instancetype)defaultPhotoConfiguration
 {
-    ZLPhotoConfiguration *configuration = [ZLPhotoConfiguration new];
+    ZLPhotoConfiguration *configuration = [[ZLPhotoConfiguration alloc] init];
     
     configuration.statusBarStyle = UIStatusBarStyleLightContent;
     configuration.maxSelectCount = 9;
@@ -77,6 +86,8 @@
     configuration.maxRecordDuration = 10;
     configuration.sessionPreset = ZLCaptureSessionPreset1280x720;
     configuration.exportVideoType = ZLExportVideoTypeMov;
+    
+    [configuration configDefaultImage];
     
     return configuration;
 }
@@ -134,5 +145,38 @@
 //        _editType = editType;
 //    }
 //}
+
+- (void)configDefaultImage {
+    self.btn_original_circle_image   = GetImageWithName(@"zl_btn_original_circle");
+    self.btn_original_selected_image = GetImageWithName(@"zl_btn_original_selected");
+    self.btn_original_circle_disabled_image = GetImageWithName(@"zl_btn_original_circle_disabled");
+    self.placeholder_photo_image = GetImageWithName(@"zl_defaultphoto");
+    self.play_video_image = GetImageWithName(@"zl_playVideo");
+    self.video_load_failed_image = GetImageWithName(@"zl_videoLoadFailed");
+    self.video_view_image = GetImageWithName(@"zl_videoView");
+    self.btn_unselected_image = GetImageWithName(@"zl_btn_unselected");
+    self.btn_selected_image = GetImageWithName(@"zl_btn_selected");
+    self.video_image = GetImageWithName(@"zl_video");
+    self.live_photo_image = GetImageWithName(@"zl_livePhoto");
+    self.take_photo_image = GetImageWithName(@"zl_takePhoto");
+    self.arrow_down_image = GetImageWithName(@"zl_arrow_down");
+    self.retake_image = GetImageWithName(@"zl_retake");
+    self.takeok_image = GetImageWithName(@"zl_takeok");
+    self.focus_image = GetImageWithName(@"zl_focus");
+    self.toggle_camera_image = GetImageWithName(@"zl_toggle_camera");
+    self.ic_left_image = GetImageWithName(@"zl_ic_left");
+    self.ic_right_image = GetImageWithName(@"zl_ic_right");
+    self.nav_back_image = GetImageWithName(@"zl_navBack");
+    self.lock_image = GetImageWithName(@"zl_lock");
+    self.play_button_white_image = GetImageWithName(@"zl_playButtonWhite");
+    self.pause_button_white_image = GetImageWithName(@"zl_pauseButtonWhite");
+    self.icon_selected_image = GetImageWithName(@"icon_selected");
+    self.drop_menu_down_image = GetImageWithName(@"drop_menu_down");
+    self.clip_image = GetImageWithName(@"zl_clip");
+    self.rotate_image = GetImageWithName(@"zl_rotateimage");
+    self.draw_image = GetImageWithName(@"zl_draw");
+    self.revoke_image = GetImageWithName(@"zl_revoke");
+    self.btn_rotate_image = GetImageWithName(@"zl_btn_rotate");
+}
 
 @end

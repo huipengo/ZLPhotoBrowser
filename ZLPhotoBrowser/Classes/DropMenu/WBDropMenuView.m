@@ -10,6 +10,7 @@
 #import "WBDropMenuCell.h"
 #import "WBDropMenuUtil.h"
 #import "ZLDefine.h"
+#import "ZLPhotoConfiguration.h"
 
 static CGFloat const wb_menu_button_height = 33.0f;
 static CGFloat const wb_menu_cell_height   = 55.0f;
@@ -188,7 +189,8 @@ static CGFloat const wb_menu_cell_height   = 55.0f;
     _menuButton.layer.cornerRadius  = menu_h / 2.0f;
     _menuButton.layer.masksToBounds = YES;
     
-    UIImage *image = GetImageWithName(@"drop_menu_down");
+    ZLPhotoConfiguration *configuration = ZLPhotoConfiguration.sharedConfiguration;
+    UIImage *image = configuration.drop_menu_down_image;
     [_menuButton setImage:image forState:UIControlStateNormal];
     CGFloat margin   = 4.0f;
     CGFloat trailing = 6.0f;

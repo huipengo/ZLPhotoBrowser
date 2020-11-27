@@ -120,7 +120,7 @@ double const ScalePhotoWidth = 1000;
         layout.minimumInteritemSpacing = 3;
         layout.sectionInset = UIEdgeInsetsMake(0, 5, 0, 5);
         
-        _configuration = [ZLPhotoConfiguration defaultPhotoConfiguration];
+        _configuration = [ZLPhotoConfiguration sharedConfiguration];
         
         self.collectionView.collectionViewLayout = layout;
         self.collectionView.backgroundColor = [UIColor whiteColor];

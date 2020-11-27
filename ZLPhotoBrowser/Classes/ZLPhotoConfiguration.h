@@ -14,14 +14,12 @@
 
 @interface ZLPhotoConfiguration : NSObject
 
-- (instancetype)init NS_UNAVAILABLE;
-
-
 /**
  默认相册配置
  */
-+ (instancetype)defaultPhotoConfiguration;
++ (nonnull instancetype)sharedConfiguration;
 
+- (instancetype)init NS_UNAVAILABLE;
 
 /**
  状态栏样式 默认 UIStatusBarStyleLightContent
@@ -307,5 +305,50 @@
  录制视频及编辑视频时候的视频导出格式，默认ZLExportVideoTypeMov
  */
 @property (nonatomic, assign) ZLExportVideoType exportVideoType;
+
+
+#pragma mark -- custom image
+@property (nonatomic, strong) UIImage *btn_original_circle_image;
+@property (nonatomic, strong) UIImage *btn_original_selected_image;
+@property (nonatomic, strong) UIImage *btn_original_circle_disabled_image;
+
+@property (nonatomic, strong) UIImage *placeholder_photo_image;
+
+@property (nonatomic, strong) UIImage *play_video_image;
+@property (nonatomic, strong) UIImage *video_load_failed_image;
+
+@property (nonatomic, strong) UIImage *video_view_image;
+@property (nonatomic, strong) UIImage *btn_unselected_image;
+@property (nonatomic, strong) UIImage *btn_selected_image;
+@property (nonatomic, strong) UIImage *video_image;
+@property (nonatomic, strong) UIImage *live_photo_image;
+@property (nonatomic, strong) UIImage *take_photo_image;
+
+@property (nonatomic, strong) UIImage *arrow_down_image;
+@property (nonatomic, strong) UIImage *retake_image;
+@property (nonatomic, strong) UIImage *takeok_image;
+@property (nonatomic, strong) UIImage *focus_image;
+@property (nonatomic, strong) UIImage *toggle_camera_image;
+
+@property (nonatomic, strong) UIImage *ic_left_image;
+@property (nonatomic, strong) UIImage *ic_right_image;
+
+@property (nonatomic, strong) UIImage *nav_back_image;
+
+@property (nonatomic, strong) UIImage *lock_image;
+
+@property (nonatomic, strong) UIImage *play_button_white_image;
+@property (nonatomic, strong) UIImage *pause_button_white_image;
+
+@property (nonatomic, strong) UIImage *icon_selected_image;
+
+@property (nonatomic, strong) UIImage *drop_menu_down_image;
+
+@property (nonatomic, strong) UIImage *clip_image;
+@property (nonatomic, strong) UIImage *rotate_image;
+@property (nonatomic, strong) UIImage *draw_image;
+@property (nonatomic, strong) UIImage *revoke_image;
+@property (nonatomic, strong) UIImage *btn_rotate_image;
+
 
 @end

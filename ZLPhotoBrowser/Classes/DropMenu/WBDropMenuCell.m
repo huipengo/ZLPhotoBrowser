@@ -11,6 +11,7 @@
 #import "ZLDefine.h"
 #import "ZLPhotoManager.h"
 #import "ZLDefine.h"
+#import "ZLPhotoConfiguration.h"
 
 @interface WBDropMenuCell ()
 
@@ -63,11 +64,12 @@
     @zl_weakify(self);
     
     self.identifier = item.headImageAsset.localIdentifier;
+    ZLPhotoConfiguration *configuration = ZLPhotoConfiguration.sharedConfiguration;
     [ZLPhotoManager requestImageForAsset:item.headImageAsset size:CGSizeMake(GetViewHeight(self)*2.5, GetViewHeight(self)*2.5) progressHandler:nil completion:^(UIImage *image, NSDictionary *info) {
         @zl_strongify(self);
         
         if ([self.identifier isEqualToString:item.headImageAsset.localIdentifier]) {
-            self.iconView.image = image?:GetImageWithName(@"zl_defaultphoto");
+            self.iconView.image = image?:configuration.placeholder_photo_image;
         }
     }];
     
@@ -126,7 +128,8 @@
 
 - (UIImageView *)arrowImgView {
     if (!_arrowImgView) {
-        UIImage *image = GetImageWithName(@"icon_selected");
+        ZLPhotoConfiguration *configuration = ZLPhotoConfiguration.sharedConfiguration;
+        UIImage *image = configuration.icon_selected_image;
         _arrowImgView = [[UIImageView alloc] initWithImage:image];
         _arrowImgView.frame = CGRectMake(0.0f, 0.0f, image.size.width, image.size.height);
         _arrowImgView.hidden = YES;

@@ -10,7 +10,7 @@
 
 @interface UIImage (ZLPhotoBrowser)
 
-- (UIImage*)rotate:(UIImageOrientation)orient;
+- (UIImage *)rotate:(UIImageOrientation)orient;
 
 - (UIImage *)fixOrientation;
 

@@ -33,8 +33,10 @@
     if (!_placeholderView) {
         _placeholderView = [[UIView alloc] initWithFrame:self.view.bounds];
         
+        ZLPhotoConfiguration *configuration = [(ZLImageNavigationController *)self.navigationController configuration];
+        
         UIImageView *imageView = [[UIImageView alloc] initWithFrame:CGRectMake(0, 0, 100, 80)];
-        imageView.image = GetImageWithName(@"zl_defaultphoto");
+        imageView.image = configuration.placeholder_photo_image;
         imageView.contentMode = UIViewContentModeScaleAspectFit;
         imageView.center = CGPointMake(kViewWidth/2, kViewHeight/2-90);
         [_placeholderView addSubview:imageView];

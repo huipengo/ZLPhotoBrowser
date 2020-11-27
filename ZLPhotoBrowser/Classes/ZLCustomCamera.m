@@ -12,7 +12,7 @@
 #import "ZLPlayer.h"
 #import "ZLPhotoManager.h"
 #import "UIImage+ZLPhotoBrowser.h"
-
+#import "ZLPhotoConfiguration.h"
 
 #define kTopViewScale .5
 #define kBottomViewScale .7
@@ -202,15 +202,17 @@
     self.topView.userInteractionEnabled = NO;
     [self addSubview:self.topView];
     
+    ZLPhotoConfiguration *configuration = ZLPhotoConfiguration.sharedConfiguration;
+    
     self.dismissBtn = [UIButton buttonWithType:UIButtonTypeCustom];
     self.dismissBtn.frame = CGRectMake(60, self.bounds.size.height/2-25/2, 25, 25);
-    [self.dismissBtn setImage:GetImageWithName(@"zl_arrow_down") forState:UIControlStateNormal];
+    [self.dismissBtn setImage:configuration.arrow_down_image forState:UIControlStateNormal];
     [self.dismissBtn addTarget:self action:@selector(dismissVC) forControlEvents:UIControlEventTouchUpInside];
     [self addSubview:self.dismissBtn];
     
     self.cancelBtn = [UIButton buttonWithType:UIButtonTypeCustom];
     self.cancelBtn.backgroundColor = [kRGB(244, 244, 244) colorWithAlphaComponent:.9];
-    [self.cancelBtn setImage:GetImageWithName(@"zl_retake") forState:UIControlStateNormal];
+    [self.cancelBtn setImage:configuration.retake_image forState:UIControlStateNormal];
     [self.cancelBtn addTarget:self action:@selector(retake) forControlEvents:UIControlEventTouchUpInside];
     self.cancelBtn.layer.masksToBounds = YES;
     self.cancelBtn.hidden = YES;
@@ -219,7 +221,7 @@
     self.doneBtn = [UIButton buttonWithType:UIButtonTypeCustom];
     self.doneBtn.frame = self.bottomView.frame;
     self.doneBtn.backgroundColor = [UIColor whiteColor];
-    [self.doneBtn setImage:GetImageWithName(@"zl_takeok") forState:UIControlStateNormal];
+    [self.doneBtn setImage:configuration.takeok_image forState:UIControlStateNormal];
     [self.doneBtn addTarget:self action:@selector(doneClick) forControlEvents:UIControlEventTouchUpInside];
     self.doneBtn.layer.masksToBounds = YES;
     self.doneBtn.hidden = YES;
@@ -1020,7 +1022,8 @@
 
 - (UIImageView *)focusCursorImageView {
     if (!_focusCursorImageView) {
-        _focusCursorImageView = [[UIImageView alloc] initWithImage:GetImageWithName(@"zl_focus")];
+        ZLPhotoConfiguration *configuration = ZLPhotoConfiguration.sharedConfiguration;
+        _focusCursorImageView = [[UIImageView alloc] initWithImage:configuration.focus_image];
         _focusCursorImageView.contentMode = UIViewContentModeScaleAspectFit;
         _focusCursorImageView.clipsToBounds = YES;
         _focusCursorImageView.frame = CGRectMake(0.0f, 0.0f, 70.0f, 70.0f);
@@ -1031,8 +1034,9 @@
 
 - (UIButton *)toggleCameraBtn {
     if (!_toggleCameraBtn) {
+        ZLPhotoConfiguration *configuration = ZLPhotoConfiguration.sharedConfiguration;
         _toggleCameraBtn = [UIButton buttonWithType:UIButtonTypeCustom];
-        [_toggleCameraBtn setImage:GetImageWithName(@"zl_toggle_camera") forState:UIControlStateNormal];
+        [_toggleCameraBtn setImage:configuration.toggle_camera_image forState:UIControlStateNormal];
         [_toggleCameraBtn addTarget:self action:@selector(btnToggleCameraAction) forControlEvents:UIControlEventTouchUpInside];
     }
     return _toggleCameraBtn;

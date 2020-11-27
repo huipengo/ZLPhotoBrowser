@@ -88,7 +88,7 @@
 {
     ZLPhotoActionSheet *actionSheet = [[ZLPhotoActionSheet alloc] init];
     
-#pragma mark - 参数配置 optional，可直接使用 defaultPhotoConfiguration
+#pragma mark - 参数配置 optional，可直接使用 sharedConfiguration
     
     actionSheet.configuration.doneBtnTitle = GetLocalLanguageTextValue(ZLPhotoBrowserSendText);
     

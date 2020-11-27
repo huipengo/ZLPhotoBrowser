@@ -269,21 +269,21 @@
     {
         if (_type & ZLImageEditTypeClip) {
             self.clipBtn = [UIButton buttonWithType:UIButtonTypeCustom];
-            [self.clipBtn setImage:GetImageWithName(@"zl_clip") forState:UIControlStateNormal];
+            [self.clipBtn setImage:_configuration.clip_image forState:UIControlStateNormal];
             [self.clipBtn addTarget:self action:@selector(clipBtn_click) forControlEvents:UIControlEventTouchUpInside];
             [self.bottomView addSubview:self.clipBtn];
         }
         
         if (_type & ZLImageEditTypeRotate) {
             self.rotateBtn = [UIButton buttonWithType:UIButtonTypeCustom];
-            [self.rotateBtn setImage:GetImageWithName(@"zl_rotateimage") forState:UIControlStateNormal];
+            [self.rotateBtn setImage:_configuration.rotate_image forState:UIControlStateNormal];
             [self.rotateBtn addTarget:self action:@selector(rotateImageBtn_click) forControlEvents:UIControlEventTouchUpInside];
             [self.bottomView addSubview:self.rotateBtn];
         }
         
         if (_type & ZLImageEditTypeDraw) {
             self.drawBtn = [UIButton buttonWithType:UIButtonTypeCustom];
-            [self.drawBtn setImage:GetImageWithName(@"zl_draw") forState:UIControlStateNormal];
+            [self.drawBtn setImage:_configuration.draw_image forState:UIControlStateNormal];
             [self.drawBtn addTarget:self action:@selector(drawBtn_click) forControlEvents:UIControlEventTouchUpInside];
             [self.bottomView addSubview:self.drawBtn];
         }
@@ -333,7 +333,7 @@
     [self addSubview:_drawMenu];
     
     self.revokeBtn = [UIButton buttonWithType:UIButtonTypeCustom];
-    [self.revokeBtn setImage:GetImageWithName(@"zl_revoke") forState:UIControlStateNormal];
+    [self.revokeBtn setImage:_configuration.revoke_image forState:UIControlStateNormal];
     [self.revokeBtn addTarget:self action:@selector(revokeBtn_click) forControlEvents:UIControlEventTouchUpInside];
     [self addSubview:self.revokeBtn];
     
@@ -382,7 +382,7 @@
     _rotateRatioBtn = [UIButton buttonWithType:UIButtonTypeCustom];
     _rotateRatioBtn.frame = CGRectMake(15, 20, 40, 40);
     _rotateRatioBtn.imageView.contentMode = UIViewContentModeScaleAspectFit;
-    UIImage *rotate_image = [GetImageWithName(@"zl_btn_rotate") imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
+    UIImage *rotate_image = [_configuration.btn_rotate_image imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
     _rotateRatioBtn.tintColor = [UIColor whiteColor];
     [_rotateRatioBtn setBackgroundImage:rotate_image forState:UIControlStateNormal];
     [_rotateRatioBtn addTarget:self action:@selector(rotateRadioBtn_click) forControlEvents:UIControlEventTouchUpInside];
