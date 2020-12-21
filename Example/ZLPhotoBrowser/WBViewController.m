@@ -175,7 +175,7 @@
         NSLog(@"图片解析出错的索引为: %@, 对应assets为: %@", errorIndex, errorAssets);
     };
     
-    actionSheet.cancleBlock = ^{
+    actionSheet.cancelCompletion = ^{
         NSLog(@"取消选择图片");
     };
     

@@ -42,7 +42,7 @@ NS_ASSUME_NONNULL_BEGIN
 /**
  取消选择回调
  */
-@property (nonatomic, copy) void (^cancleBlock)(void);
+@property (nonatomic, copy) void (^cancelCompletion)(void);
 
 
 - (instancetype)initWithFrame:(CGRect)frame NS_UNAVAILABLE;

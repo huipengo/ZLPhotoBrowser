@@ -584,7 +584,7 @@ double const ScalePhotoWidth = 1000;
         return;
     }
     
-    if (self.cancleBlock) self.cancleBlock();
+    if (self.cancelCompletion) self.cancelCompletion();
     [self hide];
 }
 
@@ -962,7 +962,7 @@ double const ScalePhotoWidth = 1000;
     
     [nav setCancelBlock:^{
         @zl_strongify(self);
-        if (self.cancleBlock) self.cancleBlock();
+        if (self.cancelCompletion) self.cancelCompletion();
         [self hide];
     }];
 

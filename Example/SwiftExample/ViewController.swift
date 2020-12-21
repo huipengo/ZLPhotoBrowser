@@ -168,7 +168,7 @@ class ViewController: UIViewController {
             debugPrint("图片解析出错索引为: \(errorIndexes), 对应assets为: \(errorAssets)")
         }
         
-        ac.cancleBlock = {
+        ac.cancelCompletion = {
             debugPrint("取消选择图片")
         }
         
